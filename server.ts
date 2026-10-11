@@ -189,34 +189,35 @@ app.get('/api/auth/status', noCache, (req, res) => {
   });
 });
 
-// First-time admin account setup (only works when 0 admins exist in DB)
-app.post('/api/auth/setup', noCache, async (req, res) => {
+// First-time setup and registration endpoint
+app.post(['/api/auth/setup', '/api/auth/register'], noCache, async (req, res) => {
   try {
     const db = getDb();
-    if (db.admins.length > 0) {
-      return res.status(403).json({
-        error: 'El administrador principal ya fue configurado. Por favor inicia sesión con tus credenciales.',
-      });
-    }
-
-    const { username, email, password, setupCode } = req.body || {};
-
-    // If ADMIN_SETUP_TOKEN env var is configured, verify it
-    if (process.env.ADMIN_SETUP_TOKEN && process.env.ADMIN_SETUP_TOKEN !== setupCode) {
-      return res.status(403).json({
-        error: 'Código de configuración inicial inválido.',
-      });
-    }
+    const { username, email, password } = req.body || {};
 
     if (!username || typeof username !== 'string' || username.trim().length < 3) {
       return res.status(400).json({ error: 'El nombre de usuario debe tener al menos 3 caracteres.' });
     }
-    if (!password || typeof password !== 'string' || password.length < 8) {
-      return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres por seguridad.' });
+    if (!password || typeof password !== 'string' || password.length < 6) {
+      return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres por seguridad.' });
     }
 
     const cleanUsername = username.trim();
     const cleanEmail = (email || `${cleanUsername}@personalizadosangel.com`).trim();
+
+    // Check if username or email already exists
+    const existing = db.admins.find(
+      (a) =>
+        a.username.toLowerCase() === cleanUsername.toLowerCase() ||
+        a.email.toLowerCase() === cleanEmail.toLowerCase()
+    );
+
+    if (existing) {
+      return res.status(409).json({
+        error: 'Ya existe una cuenta con este nombre de usuario o correo. Por favor inicia sesión.',
+      });
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
 
     const newAdmin = {
@@ -234,14 +235,15 @@ app.post('/api/auth/setup', noCache, async (req, res) => {
     const token = createSessionToken(newAdmin);
     res.cookie(COOKIE_NAME, token, {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
 
     return res.json({
       success: true,
       token,
+      message: 'Cuenta creada exitosamente.',
       admin: {
         id: newAdmin.id,
         username: newAdmin.username,
@@ -260,7 +262,7 @@ app.post('/api/auth/login', noCache, async (req, res) => {
     const db = getDb();
     if (db.admins.length === 0) {
       return res.status(400).json({
-        error: 'No hay cuenta administrativa configurada aún. Completa el registro inicial.',
+        error: 'No hay cuenta administrativa registrada aún. Por favor regístrate primero.',
         needsSetup: true,
       });
     }
@@ -279,7 +281,17 @@ app.post('/api/auth/login', noCache, async (req, res) => {
       return res.status(401).json({ error: 'Credenciales inválidas. Verifica tu usuario o contraseña.' });
     }
 
-    const valid = await bcrypt.compare(String(password), admin.passwordHash);
+    let valid = false;
+    if (admin.passwordHash.startsWith('$2a$') || admin.passwordHash.startsWith('$2b$')) {
+      valid = await bcrypt.compare(String(password), admin.passwordHash);
+    } else {
+      const shaHash = crypto.createHash('sha256').update(String(password)).digest('hex');
+      if (shaHash === admin.passwordHash || admin.passwordHash === String(password)) {
+        valid = true;
+        admin.passwordHash = await bcrypt.hash(String(password), 10);
+      }
+    }
+
     if (!valid) {
       return res.status(401).json({ error: 'Credenciales inválidas. Verifica tu usuario o contraseña.' });
     }
@@ -290,8 +302,8 @@ app.post('/api/auth/login', noCache, async (req, res) => {
     const token = createSessionToken(admin);
     res.cookie(COOKIE_NAME, token, {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
 

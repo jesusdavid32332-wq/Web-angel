@@ -759,13 +759,19 @@
         <span id="setupBadge" class="badge-setup" style="display:none">Configuración inicial de propietario</span>
       </div>
 
+      <!-- Selector de Modo: Iniciar Sesión / Registrar Administrador -->
+      <div id="authTabs" style="display:flex;gap:6px;margin:12px 0 16px;background:var(--bg-main);padding:4px;border-radius:10px;border:1px solid var(--border)">
+        <button type="button" id="tabLoginBtn" class="btn btn-sm btn-primary" style="flex:1">Iniciar Sesión</button>
+        <button type="button" id="tabRegisterBtn" class="btn btn-sm btn-outline" style="flex:1">Registrar Cuenta</button>
+      </div>
+
       <div id="authAlert" class="inline-alert"></div>
 
       <!-- Formulario de Login -->
       <form id="loginForm" class="form-grid">
         <div class="field">
           <label for="loginUser">Usuario o Correo Electrónico</label>
-          <input id="loginUser" class="input" type="text" required autocomplete="username" placeholder="Ej: admin">
+          <input id="loginUser" class="input" type="text" required autocomplete="username" placeholder="Ej: angel o tu-correo@ejemplo.com">
         </div>
         <div class="field">
           <label for="loginPass">Contraseña</label>
@@ -774,29 +780,35 @@
         <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width:100%;margin-top:6px">
           Ingresar al Panel Administrativo
         </button>
+        <p style="text-align:center;font-size:0.86rem;color:var(--muted);margin-top:8px">
+          ¿No tienes una cuenta aún? <a href="#" id="linkToRegister" style="color:var(--gold);font-weight:700;text-decoration:none">Regístrate aquí</a>
+        </p>
       </form>
 
-      <!-- Formulario de Configuración Inicial (cuando no existe administrador aún) -->
+      <!-- Formulario de Registro / Configuración Inicial -->
       <form id="setupForm" class="form-grid" style="display:none">
         <div class="field">
-          <label for="setupUser">Crear Usuario Administrador</label>
-          <input id="setupUser" class="input" type="text" required minlength="3" placeholder="Ej: angel_admin">
+          <label for="setupUser">Nombre de Usuario</label>
+          <input id="setupUser" class="input" type="text" required minlength="3" placeholder="Ej: angel">
         </div>
         <div class="field">
-          <label for="setupEmail">Correo del Propietario</label>
+          <label for="setupEmail">Correo Electrónico</label>
           <input id="setupEmail" class="input" type="email" required placeholder="tu-correo@ejemplo.com">
         </div>
         <div class="field">
-          <label for="setupPass">Crear Contraseña Segura (mínimo 8 caracteres)</label>
-          <input id="setupPass" class="input" type="password" required minlength="8" placeholder="Mínimo 8 caracteres">
+          <label for="setupPass">Contraseña (mínimo 6 caracteres)</label>
+          <input id="setupPass" class="input" type="password" required minlength="6" placeholder="Mínimo 6 caracteres">
         </div>
         <div class="field">
           <label for="setupPassConfirm">Confirmar Contraseña</label>
-          <input id="setupPassConfirm" class="input" type="password" required minlength="8" placeholder="Repite tu contraseña">
+          <input id="setupPassConfirm" class="input" type="password" required minlength="6" placeholder="Repite tu contraseña">
         </div>
         <button type="submit" id="setupSubmitBtn" class="btn btn-gold" style="width:100%;margin-top:6px">
-          Crear Cuenta de Administrador y Entrar
+          Crear Cuenta y Entrar al Panel
         </button>
+        <p style="text-align:center;font-size:0.86rem;color:var(--muted);margin-top:8px">
+          ¿Ya tienes cuenta registrada? <a href="#" id="linkToLogin" style="color:var(--gold);font-weight:700;text-decoration:none">Inicia sesión aquí</a>
+        </p>
       </form>
 
       <div style="text-align:center;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
