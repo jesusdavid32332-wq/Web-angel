@@ -11,6 +11,8 @@ import {
   getDb,
   saveDb,
   createInitialDatabase,
+} from './src/server/store.ts';
+import type {
   ProductItem,
   CategoryItem,
   ImageAsset,
@@ -26,6 +28,8 @@ import {
   extractToken,
   verifySessionToken,
   requireAdminAuth,
+} from './src/server/auth.ts';
+import type {
   AuthenticatedRequest,
 } from './src/server/auth.ts';
 
@@ -35,7 +39,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = 3000;
 
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true, limit: '15mb' }));

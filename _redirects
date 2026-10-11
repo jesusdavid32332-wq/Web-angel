@@ -1,4 +1,2 @@
-/admin /admin/index.html 200
-/admin/ /admin/index.html 200
-/admin.html /admin/index.html 200
-/admin/* /admin/index.html 200
+/admin /admin/ 301
+/admin.html /admin/ 301
