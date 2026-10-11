@@ -8,5 +8,3 @@ cli_args:
   - "--index-files"
   - "index.html"
   - "--redirect-trailing-slash"
-  - "--config-file"
-  - "config.toml"
