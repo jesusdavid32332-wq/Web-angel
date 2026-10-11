@@ -842,6 +842,8 @@
           <p id="lastUpdatedLabel">Sincronizado en tiempo real con la web pública</p>
         </div>
         <div class="topbar-actions">
+          <span id="modeStatusBadge" class="badge green">● Servidor API Conectado</span>
+          <button type="button" id="btnExportDb" class="btn btn-outline btn-sm" onclick="exportDatabaseFile()">💾 Descargar Base de Datos</button>
           <a href="/" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Ver Web Pública ↗</a>
           <button type="button" id="quickNewProductBtn" class="btn btn-gold btn-sm">+ Nuevo Producto</button>
         </div>
@@ -1546,7 +1548,358 @@
       if (cb) cb();
     });
 
+    let IS_SERVER_MODE = true;
+
+    async function hashPassword(str) {
+      const enc = new TextEncoder().encode(str);
+      const buf = await crypto.subtle.digest('SHA-256', enc);
+      return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function updateModeBadge() {
+      const badge = document.getElementById('modeStatusBadge');
+      if (!badge) return;
+      if (IS_SERVER_MODE) {
+        badge.className = 'badge green';
+        badge.textContent = '● Servidor API Conectado';
+        badge.title = 'Conexión activa con el backend Node.js en tiempo real';
+      } else {
+        badge.className = 'badge gold';
+        badge.textContent = '● Modo Local (Host Estático)';
+        badge.title = 'Operando sin backend en servidor estático. Los cambios se guardan localmente y puedes descargar database.json.';
+      }
+    }
+
+    async function getOrInitLocalDb() {
+      const stored = localStorage.getItem('angel_db');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch {}
+      }
+      try {
+        const res = await fetch('/data/database.json');
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem('angel_db', JSON.stringify(data));
+          return data;
+        }
+      } catch {}
+      return {
+        version: 1,
+        updatedAt: new Date().toISOString(),
+        identity: {
+          commercialName: "Personalizados Ángel",
+          titlePrefix: "Personalizados",
+          titleMain: "ÁNGEL",
+          subtitle: "Tu familia, tu estilo, nuestros diseños. Mugs y detalles personalizados hechos a tu medida.",
+          description: "Mugs clásicos, mágicos, metalizados, glitter y detalles personalizados con diseño exclusivo en Medellín.",
+          mainLogo: "/api/media/img_logo",
+          headerLogo: "/api/media/img_logo",
+          avatarImage: "/api/media/img_logo",
+          coverImage: "/api/media/img_cover",
+          favicon: "/api/media/img_logo",
+          phone: "318 788 8765",
+          whatsappNumber: "573187888765",
+          address: "Calle 95 #47-39, Aranjuez",
+          city: "Medellín, Colombia",
+          footerText: "© Personalizados Ángel"
+        },
+        visual: {
+          themeMode: "auto",
+          titleSizeScale: 1,
+          sectionSpacing: 56,
+          cardBorderRadius: 18,
+          buttonBorderRadius: 14
+        },
+        categories: [],
+        products: [],
+        sections: [],
+        buttons: [],
+        images: [],
+        marqueeItems: []
+      };
+    }
+
+    function saveLocalDb(data) {
+      data.updatedAt = new Date().toISOString();
+      localStorage.setItem('angel_db', JSON.stringify(data));
+      return data;
+    }
+
+    function exportDatabaseFile() {
+      const dataToExport = STATE ? {
+        version: STATE.version || 1,
+        updatedAt: new Date().toISOString(),
+        admins: [],
+        identity: STATE.identity,
+        visual: STATE.visual,
+        categories: STATE.categories,
+        products: STATE.products,
+        sections: STATE.sections,
+        buttons: STATE.buttons,
+        images: STATE.images,
+        marqueeItems: STATE.marqueeItems,
+      } : null;
+      if (!dataToExport) {
+        showToast('No hay datos para exportar', 'error');
+        return;
+      }
+      const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'database.json';
+      a.click();
+      showToast('Copia de database.json descargada');
+    }
+
+    async function handleLocalApi(url, options = {}) {
+      const method = (options.method || 'GET').toUpperCase();
+      const db = await getOrInitLocalDb();
+      let body = {};
+      if (options.body && typeof options.body === 'string') {
+        try { body = JSON.parse(options.body); } catch {}
+      }
+
+      // 1. Auth routes
+      if (url === '/api/auth/status') {
+        const localAdmin = localStorage.getItem('angel_local_admin');
+        const isLogged = sessionStorage.getItem('angel_local_session') === 'true';
+        if (!localAdmin) {
+          return { initialized: false, authenticated: false, admin: null };
+        }
+        const adminObj = JSON.parse(localAdmin);
+        return {
+          initialized: true,
+          authenticated: isLogged,
+          admin: isLogged ? { id: 'admin_local', username: adminObj.username, email: adminObj.email } : null
+        };
+      }
+
+      if (url === '/api/auth/setup') {
+        const { username, email, password } = body;
+        if (!username || username.trim().length < 3) throw new Error('Usuario debe tener al menos 3 caracteres');
+        if (!password || password.length < 8) throw new Error('Contraseña debe tener al menos 8 caracteres');
+        const hash = await hashPassword(password);
+        localStorage.setItem('angel_local_admin', JSON.stringify({
+          username: username.trim(),
+          email: (email || `${username}@personalizadosangel.com`).trim(),
+          passwordHash: hash
+        }));
+        sessionStorage.setItem('angel_local_session', 'true');
+        return { success: true, token: 'local_token' };
+      }
+
+      if (url === '/api/auth/login') {
+        const { username, password } = body;
+        const localAdmin = localStorage.getItem('angel_local_admin');
+        if (!localAdmin) throw new Error('No hay cuenta configurada aún. Realiza el registro inicial.');
+        const adminObj = JSON.parse(localAdmin);
+        const hash = await hashPassword(password);
+        const matchesUser = adminObj.username.toLowerCase() === String(username).trim().toLowerCase() ||
+                            adminObj.email.toLowerCase() === String(username).trim().toLowerCase();
+        if (!matchesUser || adminObj.passwordHash !== hash) {
+          throw new Error('Credenciales inválidas. Verifica tu usuario y contraseña.');
+        }
+        sessionStorage.setItem('angel_local_session', 'true');
+        return { success: true, token: 'local_token' };
+      }
+
+      if (url === '/api/auth/logout') {
+        sessionStorage.removeItem('angel_local_session');
+        return { success: true };
+      }
+
+      // 2. Admin State
+      if (url === '/api/admin/state') {
+        const stats = {
+          totalProducts: (db.products || []).length,
+          activeProducts: (db.products || []).filter((p) => p.active).length,
+          inactiveProducts: (db.products || []).filter((p) => !p.active).length,
+          totalCategories: (db.categories || []).length,
+          activeCategories: (db.categories || []).filter((c) => c.active).length,
+          totalImages: (db.images || []).length,
+          activeSections: (db.sections || []).filter((s) => s.active).length,
+          totalSections: (db.sections || []).length,
+          updatedAt: db.updatedAt || new Date().toISOString(),
+        };
+        return { stats, ...db };
+      }
+
+      // 3. Identity
+      if (url === '/api/admin/identity') {
+        db.identity = { ...db.identity, ...body };
+        saveLocalDb(db);
+        return { success: true, identity: db.identity, updatedAt: db.updatedAt };
+      }
+
+      // 4. Visual
+      if (url === '/api/admin/visual') {
+        db.visual = { ...db.visual, ...body };
+        saveLocalDb(db);
+        return { success: true, visual: db.visual, updatedAt: db.updatedAt };
+      }
+
+      // 5. Products CRUD
+      if (url === '/api/admin/products' && method === 'POST') {
+        const newProd = {
+          id: `prod_${Date.now()}`,
+          order: (db.products || []).length + 1,
+          active: true,
+          featured: false,
+          inCarousel: true,
+          consultPrice: true,
+          price: null,
+          priceLabel: 'Solicita precio',
+          mainImage: '/api/media/img_p1',
+          galleryImages: ['/api/media/img_p1'],
+          categoryId: (db.categories && db.categories[0] ? db.categories[0].id : 'cat_todos'),
+          ...body,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        db.products.push(newProd);
+        saveLocalDb(db);
+        return { success: true, product: newProd, updatedAt: db.updatedAt };
+      }
+
+      if (url === '/api/admin/products/reorder') {
+        const { orderedIds } = body;
+        if (Array.isArray(orderedIds)) {
+          orderedIds.forEach((id, idx) => {
+            const p = db.products.find(x => x.id === id);
+            if (p) p.order = idx + 1;
+          });
+        }
+        saveLocalDb(db);
+        return { success: true, products: db.products, updatedAt: db.updatedAt };
+      }
+
+      if (url.startsWith('/api/admin/products/') && method === 'PUT') {
+        const id = url.split('/').pop();
+        const idx = db.products.findIndex(p => p.id === id);
+        if (idx !== -1) {
+          db.products[idx] = { ...db.products[idx], ...body, updatedAt: new Date().toISOString() };
+          saveLocalDb(db);
+          return { success: true, product: db.products[idx], updatedAt: db.updatedAt };
+        }
+        throw new Error('Producto no encontrado');
+      }
+
+      if (url.startsWith('/api/admin/products/') && method === 'DELETE') {
+        const id = url.split('/').pop();
+        db.products = db.products.filter(p => p.id !== id);
+        saveLocalDb(db);
+        return { success: true, updatedAt: db.updatedAt };
+      }
+
+      // 6. Categories CRUD
+      if (url === '/api/admin/categories' && method === 'POST') {
+        const newCat = {
+          id: `cat_${Date.now()}`,
+          order: (db.categories || []).length + 1,
+          active: true,
+          ...body
+        };
+        db.categories.push(newCat);
+        saveLocalDb(db);
+        return { success: true, category: newCat, updatedAt: db.updatedAt };
+      }
+
+      if (url.startsWith('/api/admin/categories/') && method === 'PUT') {
+        const id = url.split('/').pop();
+        const idx = db.categories.findIndex(c => c.id === id);
+        if (idx !== -1) {
+          db.categories[idx] = { ...db.categories[idx], ...body };
+          saveLocalDb(db);
+          return { success: true, category: db.categories[idx], updatedAt: db.updatedAt };
+        }
+        throw new Error('Categoría no encontrada');
+      }
+
+      if (url.startsWith('/api/admin/categories/') && method === 'DELETE') {
+        const id = url.split('/').pop();
+        db.categories = db.categories.filter(c => c.id !== id);
+        saveLocalDb(db);
+        return { success: true, updatedAt: db.updatedAt };
+      }
+
+      // 7. Sections & Marquee
+      if (url === '/api/admin/sections') {
+        if (body.sections) db.sections = body.sections;
+        if (body.marqueeItems) db.marqueeItems = body.marqueeItems;
+        saveLocalDb(db);
+        return { success: true, sections: db.sections, marqueeItems: db.marqueeItems, updatedAt: db.updatedAt };
+      }
+
+      // 8. Buttons
+      if (url === '/api/admin/buttons') {
+        if (body.buttons) db.buttons = body.buttons;
+        saveLocalDb(db);
+        return { success: true, buttons: db.buttons, updatedAt: db.updatedAt };
+      }
+
+      // 9. Images
+      if (url === '/api/admin/images' && method === 'POST') {
+        const { name, category, replaceId, assignTo, base64Data } = body;
+        const now = new Date().toISOString();
+        const newImg = {
+          id: replaceId || `img_${Date.now()}`,
+          key: replaceId || `img_${Date.now()}`,
+          name: name || 'Imagen',
+          category: category || 'product',
+          url: base64Data || '',
+          mimeType: 'image/jpeg',
+          sizeBytes: (base64Data || '').length,
+          createdAt: now
+        };
+        if (replaceId) {
+          const idx = (db.images || []).findIndex(i => i.id === replaceId || i.key === replaceId);
+          if (idx !== -1) db.images[idx] = newImg;
+          else db.images.unshift(newImg);
+        } else {
+          db.images.unshift(newImg);
+        }
+        if (assignTo === 'mainLogo') { db.identity.mainLogo = newImg.url; db.identity.headerLogo = newImg.url; }
+        else if (assignTo === 'coverImage') { db.identity.coverImage = newImg.url; }
+        else if (assignTo === 'favicon') { db.identity.favicon = newImg.url; }
+        saveLocalDb(db);
+        return { success: true, image: newImg, publicUrl: newImg.url, updatedAt: db.updatedAt };
+      }
+
+      if (url.startsWith('/api/admin/images/') && method === 'DELETE') {
+        const id = url.split('/').pop();
+        db.images = (db.images || []).filter(i => i.id !== id && i.key !== id);
+        saveLocalDb(db);
+        return { success: true, updatedAt: db.updatedAt };
+      }
+
+      // 10. Credentials
+      if (url === '/api/admin/credentials') {
+        const { newUsername, newEmail, newPassword } = body;
+        const current = JSON.parse(localStorage.getItem('angel_local_admin') || '{}');
+        if (newUsername) current.username = newUsername.trim();
+        if (newEmail) current.email = newEmail.trim();
+        if (newPassword) current.passwordHash = await hashPassword(newPassword);
+        localStorage.setItem('angel_local_admin', JSON.stringify(current));
+        return { success: true, admin: { username: current.username, email: current.email } };
+      }
+
+      // 11. Restore
+      if (url === '/api/admin/restore') {
+        const restored = { ...body, updatedAt: new Date().toISOString() };
+        saveLocalDb(restored);
+        return { success: true, updatedAt: restored.updatedAt };
+      }
+
+      return { success: true };
+    }
+
     async function apiFetch(url, options = {}) {
+      if (!IS_SERVER_MODE && url.startsWith('/api/')) {
+        return handleLocalApi(url, options);
+      }
+
       const headers = { ...(options.headers || {}) };
       if (SESSION_TOKEN) {
         headers['Authorization'] = `Bearer ${SESSION_TOKEN}`;
@@ -1554,11 +1907,28 @@
       if (!(options.body instanceof FormData) && !headers['Content-Type']) {
         headers['Content-Type'] = 'application/json';
       }
-      const response = await fetch(url, {
-        ...options,
-        headers,
-        credentials: 'same-origin',
-      });
+
+      let response;
+      try {
+        response = await fetch(url, {
+          ...options,
+          headers,
+          credentials: 'same-origin',
+        });
+      } catch (netErr) {
+        console.warn('Fallo de red hacia el servidor API, cambiando a Modo Local:', netErr);
+        IS_SERVER_MODE = false;
+        updateModeBadge();
+        return handleLocalApi(url, options);
+      }
+
+      if (response.status === 404 && url.startsWith('/api/')) {
+        console.warn('Ruta API 404 no encontrada en este host (modo estático), activando soporte local.');
+        IS_SERVER_MODE = false;
+        updateModeBadge();
+        return handleLocalApi(url, options);
+      }
+
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         if (response.status === 401 && document.getElementById('adminApp').classList.contains('active')) {
@@ -1569,10 +1939,10 @@
       return data;
     }
 
-    // 1. VERIFICAR ESTADO DE AUTENTICACIÓN AL CARGAR /admin
     async function checkAuthStatus() {
       try {
         const status = await apiFetch('/api/auth/status');
+        updateModeBadge();
         if (!status.initialized) {
           showAuthScreen(false);
         } else if (status.authenticated) {

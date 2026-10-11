@@ -2,14 +2,2959 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Panel Administrativo — Personalizados Ángel</title>
-  <meta http-equiv="refresh" content="0; url=/admin.html">
-  <script>
-    window.location.replace('/admin.html' + window.location.search + window.location.hash);
-  </script>
+  <style>
+    :root {
+      --navy: #0a1a4a;
+      --navy-dark: #061030;
+      --navy-light: #13286a;
+      --gold: #f2c75c;
+      --gold-dark: #d4a638;
+      --teal: #5fa8c4;
+      --wa: #1faa59;
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --success: #16a34a;
+      --success-bg: #f0fdf4;
+      --radius: 12px;
+      --shadow: 0 4px 20px -4px rgba(10, 26, 74, 0.08);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Trebuchet MS", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    /* AUTH SCREEN */
+    .auth-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(155deg, #061030 0%, #0e2563 55%, #2b6684 100%);
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 32px 26px;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(242, 199, 92, 0.35);
+    }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .auth-logo {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      object-fit: cover;
+      border: 3px solid var(--gold);
+      background: var(--navy);
+    }
+    .auth-header h1 {
+      font-size: 1.4rem;
+      color: var(--navy);
+      font-weight: 800;
+    }
+    .auth-header p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .badge-setup {
+      display: inline-block;
+      background: #fef9c3;
+      color: #854d0e;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+      margin-top: 8px;
+      border: 1px solid #fde047;
+    }
+
+    /* ADMIN LAYOUT */
+    .admin-app {
+      display: none;
+      min-height: 100vh;
+    }
+    .admin-app.active {
+      display: flex;
+      flex-direction: column;
+    }
+    @media (min-width: 960px) {
+      .admin-app.active {
+        flex-direction: row;
+      }
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      background: var(--navy-dark);
+      color: #fff;
+      width: 100%;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    @media (min-width: 960px) {
+      .sidebar {
+        width: 270px;
+        min-height: 100vh;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        border-bottom: 0;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    }
+    .sidebar-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      object-fit: cover;
+      background: var(--navy);
+    }
+    .brand-info strong {
+      display: block;
+      font-size: 0.98rem;
+      color: var(--gold);
+      line-height: 1.2;
+    }
+    .brand-info span {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+    .mobile-toggle {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    @media (min-width: 960px) {
+      .mobile-toggle {
+        display: none;
+      }
+    }
+    .nav-list {
+      display: none;
+      flex-direction: column;
+      padding: 12px;
+      gap: 4px;
+      flex: 1;
+    }
+    .nav-list.open {
+      display: flex;
+    }
+    @media (min-width: 960px) {
+      .nav-list {
+        display: flex;
+      }
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 11px 14px;
+      border: 0;
+      background: transparent;
+      color: #cbd5e1;
+      text-align: left;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.92rem;
+      font-weight: 600;
+      transition: background 0.15s, color 0.15s;
+      text-decoration: none;
+    }
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.07);
+      color: #fff;
+    }
+    .nav-btn.active {
+      background: var(--gold);
+      color: var(--navy-dark);
+      font-weight: 700;
+    }
+    .nav-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 8px 0;
+    }
+    .nav-btn.public-link {
+      background: rgba(31, 170, 89, 0.16);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+    .nav-btn.public-link:hover {
+      background: rgba(31, 170, 89, 0.28);
+      color: #fff;
+    }
+    .nav-btn.logout-btn {
+      color: #fca5a5;
+    }
+    .nav-btn.logout-btn:hover {
+      background: rgba(220, 38, 38, 0.2);
+      color: #fecaca;
+    }
+
+    /* MAIN CONTENT */
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .topbar {
+      background: var(--card);
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .topbar-title h2 {
+      font-size: 1.25rem;
+      color: var(--navy);
+    }
+    .topbar-title p {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .content-container {
+      padding: 22px;
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    @media (max-width: 600px) {
+      .content-container {
+        padding: 14px;
+      }
+      .topbar {
+        padding: 12px 14px;
+      }
+    }
+
+    /* PANELS & CARDS */
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+    .panel-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+    .panel-card h3 {
+      font-size: 1.1rem;
+      color: var(--navy);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .panel-card p.desc {
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    /* STATS GRID */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .stat-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .stat-box span.label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .stat-box strong.value {
+      display: block;
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--navy);
+      margin-top: 4px;
+    }
+    .stat-box small {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--teal);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* FORMS */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 720px) {
+      .form-grid.cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .form-grid.cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field.full {
+      grid-column: 1 / -1;
+    }
+    .field label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .field small {
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+    .input, .select, .textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: #fff;
+      color: var(--text);
+      font-size: 0.92rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .input:focus, .select:focus, .textarea:focus {
+      outline: none;
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(10, 26, 74, 0.12);
+    }
+    .textarea {
+      min-height: 84px;
+      resize: vertical;
+    }
+    .color-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .color-picker {
+      width: 46px;
+      height: 40px;
+      padding: 2px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      cursor: pointer;
+      user-select: none;
+    }
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--navy);
+      cursor: pointer;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 8px 16px;
+      border-radius: 9px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+      text-decoration: none;
+      transition: opacity 0.15s, transform 0.1s, background 0.15s;
+    }
+    .btn:active {
+      transform: scale(0.98);
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .btn-primary {
+      background: var(--navy);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--navy-light);
+    }
+    .btn-gold {
+      background: var(--gold);
+      color: var(--navy-dark);
+    }
+    .btn-gold:hover {
+      background: var(--gold-dark);
+    }
+    .btn-wa {
+      background: var(--wa);
+      color: #fff;
+    }
+    .btn-outline {
+      background: #fff;
+      border-color: #cbd5e1;
+      color: #334155;
+    }
+    .btn-outline:hover {
+      background: #f8fafc;
+    }
+    .btn-danger {
+      background: var(--danger-bg);
+      border-color: #fecaca;
+      color: var(--danger);
+    }
+    .btn-danger:hover {
+      background: #fee2e2;
+    }
+    .btn-sm {
+      min-height: 34px;
+      padding: 5px 11px;
+      font-size: 0.8rem;
+    }
+    .action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    /* TOAST / STATUS MESSAGES */
+    .toast-banner {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      left: 20px;
+      max-width: 420px;
+      margin-left: auto;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.25);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .toast-banner.show {
+      display: flex;
+    }
+    .toast-banner.success {
+      background: #065f46;
+      color: #fff;
+      border: 1px solid #34d399;
+    }
+    .toast-banner.error {
+      background: #991b1b;
+      color: #fff;
+      border: 1px solid #f87171;
+    }
+    .inline-alert {
+      padding: 12px 14px;
+      border-radius: 9px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: none;
+    }
+    .inline-alert.error {
+      display: block;
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+    .inline-alert.success {
+      display: block;
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid #bbf7d0;
+    }
+
+    /* ITEM CARDS (Products, Categories, Images) */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
+      gap: 16px;
+    }
+    .item-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.2s;
+    }
+    .item-card.inactive {
+      opacity: 0.65;
+      background: #f8fafc;
+    }
+    .item-thumb {
+      aspect-ratio: 1 / 1;
+      background: #f1f5f9;
+      position: relative;
+      overflow: hidden;
+    }
+    .item-thumb.wide {
+      aspect-ratio: 16 / 9;
+    }
+    .item-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .item-badges {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: rgba(10, 26, 74, 0.85);
+      color: #fff;
+    }
+    .badge.green {
+      background: #15803d;
+    }
+    .badge.gray {
+      background: #475569;
+    }
+    .badge.gold {
+      background: var(--gold);
+      color: var(--navy-dark);
+    }
+    .item-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .item-body h4 {
+      font-size: 0.98rem;
+      color: var(--navy);
+    }
+    .item-body p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      flex: 1;
+    }
+    .item-price {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--teal);
+    }
+    .item-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    /* IMAGE PREVIEW WIDGET */
+    .img-Selector-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 10px;
+      background: #f8fafc;
+      flex-wrap: wrap;
+    }
+    .img-preview-frame {
+      width: 82px;
+      height: 82px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #e2e8f0;
+      border: 1px solid #cbd5e1;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .img-preview-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* MODAL */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 16, 48, 0.72);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h3 {
+      font-size: 1.15rem;
+      color: var(--navy);
+    }
+
+    /* LIST ROWS */
+    .list-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .list-row {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .list-row-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+  </style>
 </head>
-<body style="background:#061030;color:#f8efd2;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0">
-  <p>Abriendo Panel Administrativo... <a href="/admin.html" style="color:#f2c75c">Haz clic aquí si no redirige automáticamente</a>.</p>
+<body>
+
+  <!-- 1. PANTALLA DE ACCESO / REGISTRO INICIAL -->
+  <div id="authScreen" class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <img id="authLogo" class="auth-logo" src="/api/media/img_logo" alt="Personalizados Ángel">
+        <h1 id="authTitle">Administración — Personalizados Ángel</h1>
+        <p id="authSubtitle">Inicia sesión con tus credenciales de administrador</p>
+        <span id="setupBadge" class="badge-setup" style="display:none">Configuración inicial de propietario</span>
+      </div>
+
+      <div id="authAlert" class="inline-alert"></div>
+
+      <!-- Formulario de Login -->
+      <form id="loginForm" class="form-grid">
+        <div class="field">
+          <label for="loginUser">Usuario o Correo Electrónico</label>
+          <input id="loginUser" class="input" type="text" required autocomplete="username" placeholder="Ej: admin">
+        </div>
+        <div class="field">
+          <label for="loginPass">Contraseña</label>
+          <input id="loginPass" class="input" type="password" required autocomplete="current-password" placeholder="••••••••">
+        </div>
+        <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width:100%;margin-top:6px">
+          Ingresar al Panel Administrativo
+        </button>
+      </form>
+
+      <!-- Formulario de Configuración Inicial (cuando no existe administrador aún) -->
+      <form id="setupForm" class="form-grid" style="display:none">
+        <div class="field">
+          <label for="setupUser">Crear Usuario Administrador</label>
+          <input id="setupUser" class="input" type="text" required minlength="3" placeholder="Ej: angel_admin">
+        </div>
+        <div class="field">
+          <label for="setupEmail">Correo del Propietario</label>
+          <input id="setupEmail" class="input" type="email" required placeholder="tu-correo@ejemplo.com">
+        </div>
+        <div class="field">
+          <label for="setupPass">Crear Contraseña Segura (mínimo 8 caracteres)</label>
+          <input id="setupPass" class="input" type="password" required minlength="8" placeholder="Mínimo 8 caracteres">
+        </div>
+        <div class="field">
+          <label for="setupPassConfirm">Confirmar Contraseña</label>
+          <input id="setupPassConfirm" class="input" type="password" required minlength="8" placeholder="Repite tu contraseña">
+        </div>
+        <button type="submit" id="setupSubmitBtn" class="btn btn-gold" style="width:100%;margin-top:6px">
+          Crear Cuenta de Administrador y Entrar
+        </button>
+      </form>
+
+      <div style="text-align:center;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
+        <a href="/" class="btn btn-outline btn-sm">← Volver a la página pública</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. APLICACIÓN DEL PANEL ADMINISTRATIVO -->
+  <div id="adminApp" class="admin-app">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand">
+          <img id="sideLogo" src="/api/media/img_logo" alt="Logo">
+          <div class="brand-info">
+            <strong id="sideBrandName">Personalizados Ángel</strong>
+            <span id="sideAdminUser">Panel Privado</span>
+          </div>
+        </div>
+        <button type="button" id="mobileMenuBtn" class="mobile-toggle">Menú ☰</button>
+      </div>
+
+      <nav id="navList" class="nav-list">
+        <button type="button" class="nav-btn active" data-tab="resumen">📊 Resumen</button>
+        <button type="button" class="nav-btn" data-tab="identidad">🏛️ Identidad del negocio</button>
+        <button type="button" class="nav-btn" data-tab="productos">☕ Productos</button>
+        <button type="button" class="nav-btn" data-tab="categorias">🏷️ Categorías</button>
+        <button type="button" class="nav-btn" data-tab="imagenes">🖼️ Imágenes y Fotos</button>
+        <button type="button" class="nav-btn" data-tab="secciones">📑 Contenido de la página</button>
+        <button type="button" class="nav-btn" data-tab="visual">🎨 Diseño y colores</button>
+        <button type="button" class="nav-btn" data-tab="botones">🔗 Botones y enlaces</button>
+        <button type="button" class="nav-btn" data-tab="configuracion">⚙️ Configuración y Cuenta</button>
+        <div class="nav-divider"></div>
+        <a href="/" target="_blank" rel="noopener" class="nav-btn public-link">🌐 Ver página pública ↗</a>
+        <button type="button" id="logoutBtn" class="nav-btn logout-btn">🚪 Cerrar sesión</button>
+      </nav>
+    </aside>
+
+    <div class="main-area">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h2 id="currentTabTitle">Resumen del Sistema</h2>
+          <p id="lastUpdatedLabel">Sincronizado en tiempo real con la web pública</p>
+        </div>
+        <div class="topbar-actions">
+          <span id="modeStatusBadge" class="badge green">● Servidor API Conectado</span>
+          <button type="button" id="btnExportDb" class="btn btn-outline btn-sm" onclick="exportDatabaseFile()">💾 Descargar Base de Datos</button>
+          <a href="/" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Ver Web Pública ↗</a>
+          <button type="button" id="quickNewProductBtn" class="btn btn-gold btn-sm">+ Nuevo Producto</button>
+        </div>
+      </header>
+
+      <main class="content-container">
+
+        <!-- TAB 1: RESUMEN -->
+        <section id="tab-resumen" class="tab-panel active">
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="label">Total de Productos</span>
+              <strong class="value" id="statTotalProducts">0</strong>
+              <small id="statActiveProducts">0 activos en catálogo</small>
+            </div>
+            <div class="stat-box">
+              <span class="label">Categorías</span>
+              <strong class="value" id="statTotalCategories">0</strong>
+              <small id="statActiveCategories">0 categorías activas</small>
+            </div>
+            <div class="stat-box">
+              <span class="label">Imágenes Almacenadas</span>
+              <strong class="value" id="statTotalImages">0</strong>
+              <small>Persistentes en base de datos</small>
+            </div>
+            <div class="stat-box">
+              <span class="label">Última Actualización</span>
+              <strong class="value" id="statUpdatedTime" style="font-size:1.1rem;margin-top:10px">—</strong>
+              <small id="statUpdatedDate">—</small>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <h3>Accesos Rápidos de Administración</h3>
+            <p class="desc">Selecciona qué parte de la página de Personalizados Ángel deseas modificar ahora mismo.</p>
+            <div class="form-grid cols-3">
+              <button type="button" class="btn btn-outline" onclick="switchTab('identidad')">🏛️ Cambiar Nombre, Logo o WhatsApp</button>
+              <button type="button" class="btn btn-outline" onclick="switchTab('productos')">☕ Administrar Catálogo de Productos</button>
+              <button type="button" class="btn btn-outline" onclick="switchTab('imagenes')">🖼️ Subir Fotografías desde Celular/PC</button>
+              <button type="button" class="btn btn-outline" onclick="switchTab('secciones')">📑 Editar Textos y Secciones</button>
+              <button type="button" class="btn btn-outline" onclick="switchTab('visual')">🎨 Cambiar Colores, Fuentes y Efectos</button>
+              <button type="button" class="btn btn-outline" onclick="switchTab('botones')">🔗 Configurar Botones de WhatsApp</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2: IDENTIDAD DEL NEGOCIO -->
+        <section id="tab-identidad" class="tab-panel">
+          <form id="identityForm" class="panel-card">
+            <h3>Identidad Comercial y Datos Principales</h3>
+            <p class="desc">Modifica el nombre comercial, textos de la portada, logotipos, teléfono, WhatsApp, dirección y redes sociales.</p>
+
+            <div class="form-grid cols-2">
+              <div class="field">
+                <label>Nombre Comercial (Título de pestaña y marca)</label>
+                <input type="text" id="id_commercialName" class="input" required>
+              </div>
+              <div class="field">
+                <label>Texto Superior del Título (Ej: Personalizados)</label>
+                <input type="text" id="id_titlePrefix" class="input">
+              </div>
+              <div class="field">
+                <label>Palabra Principal con Efecto de Rayos (Ej: ÁNGEL)</label>
+                <input type="text" id="id_titleMain" class="input" required>
+              </div>
+              <div class="field">
+                <label>Subtítulo / Eslogan en Portada</label>
+                <input type="text" id="id_subtitle" class="input">
+              </div>
+              <div class="field full">
+                <label>Descripción del Negocio (SEO / Meta descripción)</label>
+                <textarea id="id_description" class="textarea"></textarea>
+              </div>
+
+              <!-- Logotipo Principal -->
+              <div class="field">
+                <label>Logotipo Principal / Encabezado</label>
+                <div class="img-Selector-box">
+                  <div class="img-preview-frame">
+                    <img id="prev_mainLogo" src="/api/media/img_logo" alt="Logo">
+                  </div>
+                  <div style="flex:1;min-width:180px">
+                    <input type="text" id="id_mainLogo" class="input" style="margin-bottom:8px" placeholder="URL de imagen">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap">
+                      <label class="btn btn-gold btn-sm">
+                        📤 Subir nueva foto
+                        <input type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadAndAssign(this, 'id_mainLogo', 'prev_mainLogo', 'logo', 'img_logo')">
+                      </label>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="openMediaPicker('id_mainLogo', 'prev_mainLogo')">Elegir de galería</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Imagen de Portada -->
+              <div class="field">
+                <label>Imagen de Portada Principal (Hero)</label>
+                <div class="img-Selector-box">
+                  <div class="img-preview-frame">
+                    <img id="prev_coverImage" src="/api/media/img_cover" alt="Portada">
+                  </div>
+                  <div style="flex:1;min-width:180px">
+                    <input type="text" id="id_coverImage" class="input" style="margin-bottom:8px" placeholder="URL de portada">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap">
+                      <label class="btn btn-gold btn-sm">
+                        📤 Subir portada
+                        <input type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadAndAssign(this, 'id_coverImage', 'prev_coverImage', 'cover', 'img_cover')">
+                      </label>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="openMediaPicker('id_coverImage', 'prev_coverImage')">Elegir de galería</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Favicon -->
+              <div class="field">
+                <label>Favicon (Icono de pestaña del navegador)</label>
+                <div class="img-Selector-box">
+                  <div class="img-preview-frame" style="width:52px;height:52px">
+                    <img id="prev_favicon" src="/api/media/img_logo" alt="Favicon">
+                  </div>
+                  <div style="flex:1">
+                    <input type="text" id="id_favicon" class="input" style="margin-bottom:6px">
+                    <label class="btn btn-outline btn-sm">
+                      📤 Subir Favicon
+                      <input type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadAndAssign(this, 'id_favicon', 'prev_favicon', 'logo')">
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Texto del Pie de Página (Footer)</label>
+                <input type="text" id="id_footerText" class="input">
+              </div>
+
+              <div class="field">
+                <label>Número de WhatsApp (Con código de país, sin +, ej: 573187888765)</label>
+                <input type="text" id="id_whatsappNumber" class="input" required>
+              </div>
+              <div class="field">
+                <label>Número de Teléfono Visible</label>
+                <input type="text" id="id_phone" class="input">
+              </div>
+              <div class="field">
+                <label>Dirección Física</label>
+                <input type="text" id="id_address" class="input">
+              </div>
+              <div class="field">
+                <label>Ciudad / País</label>
+                <input type="text" id="id_city" class="input">
+              </div>
+              <div class="field full">
+                <label>Nota adicional debajo de la dirección (Opcional)</label>
+                <input type="text" id="id_addressNote" class="input" placeholder="Ej: Atención de lunes a sábado">
+              </div>
+
+              <div class="field">
+                <label>Enlace de Instagram</label>
+                <input type="url" id="id_instagram" class="input" placeholder="https://www.instagram.com/...">
+              </div>
+              <div class="field">
+                <label>Enlace de Facebook</label>
+                <input type="url" id="id_facebook" class="input" placeholder="https://www.facebook.com/...">
+              </div>
+              <div class="field full">
+                <label>Enlace de Google Maps</label>
+                <input type="url" id="id_googleMaps" class="input" placeholder="https://www.google.com/maps/...">
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <button type="button" class="btn btn-outline" onclick="renderIdentityForm()">Cancelar cambios</button>
+              <button type="submit" class="btn btn-primary">💾 Guardar cambios de Identidad</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- TAB 3: PRODUCTOS -->
+        <section id="tab-productos" class="tab-panel">
+          <div class="panel-card">
+            <h3>
+              <span>Catálogo de Productos (<span id="productsCountLabel">0</span>)</span>
+              <button type="button" class="btn btn-gold btn-sm" onclick="openProductModal()">+ Crear Producto Nuevo</button>
+            </h3>
+            <p class="desc">Crea, edita, cambia precios, sube fotografías, reordena, activa o desactiva productos en tiempo real.</p>
+            <div id="productsGrid" class="items-grid"></div>
+          </div>
+        </section>
+
+        <!-- TAB 4: CATEGORÍAS -->
+        <section id="tab-categorias" class="tab-panel">
+          <div class="panel-card">
+            <h3>
+              <span>Categorías del Catálogo</span>
+              <button type="button" class="btn btn-gold btn-sm" onclick="openCategoryModal()">+ Nueva Categoría</button>
+            </h3>
+            <p class="desc">Administra las categorías de productos para organizar el catálogo público.</p>
+            <div id="categoriesGrid" class="items-grid"></div>
+          </div>
+        </section>
+
+        <!-- TAB 5: IMÁGENES Y FOTOGRAFÍAS -->
+        <section id="tab-imagenes" class="tab-panel">
+          <div class="panel-card">
+            <h3>Subir Nueva Fotografía o Imagen</h3>
+            <p class="desc">Compatible con galería de celular y computador (JPG, PNG, WebP hasta 8 MB). Previsualiza antes de guardar.</p>
+
+            <form id="uploadImageForm" class="form-grid cols-2">
+              <div class="field">
+                <label>Seleccionar archivo de imagen desde tu dispositivo</label>
+                <input type="file" id="newImgFile" class="input" accept="image/jpeg,image/png,image/webp" required>
+              </div>
+              <div class="field">
+                <label>Nombre descriptivo de la imagen</label>
+                <input type="text" id="newImgName" class="input" placeholder="Ej: Mug Día del Padre">
+              </div>
+              <div class="field">
+                <label>Clasificación</label>
+                <select id="newImgCategory" class="select">
+                  <option value="product">Producto</option>
+                  <option value="gallery">Galería / Carrusel</option>
+                  <option value="cover">Portada</option>
+                  <option value="logo">Logotipo</option>
+                  <option value="banner">Banner / Flyer</option>
+                  <option value="background">Fondo</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Reemplazar imagen existente (Opcional)</label>
+                <select id="newImgReplaceId" class="select">
+                  <option value="">— Guardar como imagen nueva —</option>
+                </select>
+              </div>
+              <div class="field full" id="newImgPreviewContainer" style="display:none">
+                <label>Vista previa antes de subir:</label>
+                <div class="img-Selector-box">
+                  <div class="img-preview-frame" style="width:140px;height:140px">
+                    <img id="newImgPreviewEl" src="" alt="Vista previa">
+                  </div>
+                  <div>
+                    <p id="newImgMetaInfo" style="font-size:0.85rem;color:var(--muted)"></p>
+                  </div>
+                </div>
+              </div>
+              <div class="field full">
+                <div style="display:flex;gap:10px;justify-content:flex-end">
+                  <button type="reset" class="btn btn-outline" onclick="clearNewImagePreview()">Cancelar</button>
+                  <button type="submit" id="uploadImgSubmitBtn" class="btn btn-primary">📤 Subir y Guardar Imagen</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="panel-card">
+            <h3>Biblioteca de Imágenes Persistentes</h3>
+            <p class="desc">Todas las fotografías guardadas en la base de datos. Puedes reemplazar cualquiera sin romper los productos que la usan.</p>
+            <div id="imagesLibraryGrid" class="items-grid"></div>
+          </div>
+        </section>
+
+        <!-- TAB 6: CONTENIDO DE LA PÁGINA Y SECCIONES -->
+        <section id="tab-secciones" class="tab-panel">
+          <div class="panel-card">
+            <h3>Cinta Animada Superior (Marquesina Dorada)</h3>
+            <p class="desc">Frases separadas por coma que giran en la cinta dorada debajo de la portada.</p>
+            <div class="field">
+              <label>Textos de la cinta (separados por coma)</label>
+              <input type="text" id="marqueeInput" class="input" placeholder="Tazas, Mugs, Mugs a todo color, Mugs metalizados...">
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <h3>Secciones de la Página Pública</h3>
+            <p class="desc">Edita los títulos, subtítulos, imágenes, etiquetas, orden y visibilidad de cada sección de la página.</p>
+            <div id="sectionsListContainer" class="list-stack"></div>
+
+            <div class="action-bar">
+              <button type="button" class="btn btn-outline" onclick="renderSectionsEditor()">Cancelar cambios</button>
+              <button type="button" class="btn btn-primary" onclick="saveSectionsChanges()">💾 Guardar Contenido de Secciones</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 7: DISEÑO Y COLORES (CONFIGURACIÓN VISUAL) -->
+        <section id="tab-visual" class="tab-panel">
+          <form id="visualForm" class="panel-card">
+            <h3>Paleta de Colores, Tipografías, Tamaños y Efectos</h3>
+            <p class="desc">Personaliza la apariencia visual conservando la estabilidad en celulares y computadores.</p>
+
+            <div class="form-grid cols-3">
+              <div class="field">
+                <label>Color Azul Marino Principal (--navy)</label>
+                <div class="color-row">
+                  <input type="color" id="vis_navyColor_pick" class="color-picker" oninput="syncColor('vis_navyColor', this.value)">
+                  <input type="text" id="vis_navyColor" class="input" oninput="syncColor('vis_navyColor_pick', this.value)">
+                </div>
+              </div>
+              <div class="field">
+                <label>Color Dorado Principal (--gold)</label>
+                <div class="color-row">
+                  <input type="color" id="vis_goldColor_pick" class="color-picker" oninput="syncColor('vis_goldColor', this.value)">
+                  <input type="text" id="vis_goldColor" class="input" oninput="syncColor('vis_goldColor_pick', this.value)">
+                </div>
+              </div>
+              <div class="field">
+                <label>Color Turquesa / Acento (--teal)</label>
+                <div class="color-row">
+                  <input type="color" id="vis_tealColor_pick" class="color-picker" oninput="syncColor('vis_tealColor', this.value)">
+                  <input type="text" id="vis_tealColor" class="input" oninput="syncColor('vis_tealColor_pick', this.value)">
+                </div>
+              </div>
+              <div class="field">
+                <label>Color Verde WhatsApp (--wa)</label>
+                <div class="color-row">
+                  <input type="color" id="vis_waColor_pick" class="color-picker" oninput="syncColor('vis_waColor', this.value)">
+                  <input type="text" id="vis_waColor" class="input" oninput="syncColor('vis_waColor_pick', this.value)">
+                </div>
+              </div>
+              <div class="field">
+                <label>Fondo General Modo Claro (--bg)</label>
+                <div class="color-row">
+                  <input type="color" id="vis_bgLight_pick" class="color-picker" oninput="syncColor('vis_bgLight', this.value)">
+                  <input type="text" id="vis_bgLight" class="input" oninput="syncColor('vis_bgLight_pick', this.value)">
+                </div>
+              </div>
+              <div class="field">
+                <label>Texto Principal Modo Claro (--fg)</label>
+                <div class="color-row">
+                  <input type="color" id="vis_fgLight_pick" class="color-picker" oninput="syncColor('vis_fgLight', this.value)">
+                  <input type="text" id="vis_fgLight" class="input" oninput="syncColor('vis_fgLight_pick', this.value)">
+                </div>
+              </div>
+              <div class="field">
+                <label>Fondo General Modo Oscuro</label>
+                <div class="color-row">
+                  <input type="color" id="vis_bgDark_pick" class="color-picker" oninput="syncColor('vis_bgDark', this.value)">
+                  <input type="text" id="vis_bgDark" class="input" oninput="syncColor('vis_bgDark_pick', this.value)">
+                </div>
+              </div>
+              <div class="field">
+                <label>Fondo de Tarjetas Modo Claro</label>
+                <div class="color-row">
+                  <input type="color" id="vis_cardLight_pick" class="color-picker" oninput="syncColor('vis_cardLight', this.value)">
+                  <input type="text" id="vis_cardLight" class="input" oninput="syncColor('vis_cardLight_pick', this.value)">
+                </div>
+              </div>
+              <div class="field">
+                <label>Modo de Tema Predeterminado</label>
+                <select id="vis_themeMode" class="select">
+                  <option value="auto">Automático (Según dispositivo del visitante)</option>
+                  <option value="light">Siempre Modo Claro (Crema/Dorado)</option>
+                  <option value="dark">Siempre Modo Oscuro (Azul Noche)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid cols-2" style="margin-top:18px">
+              <div class="field">
+                <label>Tipografía de Títulos y Botones</label>
+                <select id="vis_headingFont" class="select">
+                  <option value='"Trebuchet MS", "Segoe UI", system-ui, sans-serif'>Trebuchet MS / Moderna (Original)</option>
+                  <option value='"Cinzel", Georgia, serif'>Cinzel / Imperial Elegante</option>
+                  <option value='system-ui, -apple-system, BlinkMacSystemFont, sans-serif'>System Sans-Serif Limpia</option>
+                  <option value='Georgia, "Palatino Linotype", serif'>Georgia Clásica</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Tipografía de Textos y Párrafos</label>
+                <select id="vis_bodyFont" class="select">
+                  <option value='Georgia, "Palatino Linotype", serif'>Georgia / Serif Editorial (Original)</option>
+                  <option value='"Trebuchet MS", "Segoe UI", system-ui, sans-serif'>Trebuchet MS / Sans-Serif</option>
+                  <option value='system-ui, -apple-system, sans-serif'>System UI Moderna</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Escala de Tamaño de Títulos (<span id="lbl_titleScale">100%</span>)</label>
+                <input type="range" id="vis_titleSizeScale" min="0.85" max="1.20" step="0.05" oninput="document.getElementById('lbl_titleScale').textContent=Math.round(this.value*100)+'%'">
+              </div>
+              <div class="field">
+                <label>Espaciado Vertical de Secciones (<span id="lbl_secSpacing">56px</span>)</label>
+                <input type="range" id="vis_sectionSpacing" min="32" max="88" step="4" oninput="document.getElementById('lbl_secSpacing').textContent=this.value+'px'">
+              </div>
+              <div class="field">
+                <label>Redondeo de Bordes de Tarjetas (<span id="lbl_cardRadius">18px</span>)</label>
+                <input type="range" id="vis_cardBorderRadius" min="6" max="28" step="2" oninput="document.getElementById('lbl_cardRadius').textContent=this.value+'px'">
+              </div>
+              <div class="field">
+                <label>Redondeo de Botones (<span id="lbl_btnRadius">14px</span>)</label>
+                <input type="range" id="vis_buttonBorderRadius" min="6" max="26" step="2" oninput="document.getElementById('lbl_btnRadius').textContent=this.value+'px'">
+              </div>
+            </div>
+
+            <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
+              <h4 style="margin-bottom:10px;color:var(--navy)">Animaciones GSAP, ScrollTrigger y Efectos Especiales</h4>
+              <div class="form-grid cols-2">
+                <label class="checkbox-row">
+                  <input type="checkbox" id="vis_enableSparkles">
+                  <span>Activar partículas doradas flotantes en el encabezado</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="vis_enableLightning">
+                  <span>Activar rayos eléctricos y brillo en el título “ÁNGEL”</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="vis_enable3DCarouselRotation">
+                  <span>Activar giro automático continuo en el carrusel 3D</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="vis_enableCardTilt">
+                  <span>Activar inclinación 3D interactiva en portada y tarjetas</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="vis_enableScrollAnimations">
+                  <span>Activar animaciones de aparición al bajar (ScrollTrigger)</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <button type="button" class="btn btn-outline" onclick="renderVisualForm()">Cancelar</button>
+              <button type="submit" class="btn btn-primary">💾 Guardar Diseño y Colores</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- TAB 8: BOTONES Y ENLACES -->
+        <section id="tab-botones" class="tab-panel">
+          <div class="panel-card">
+            <h3>Botones de Acción y Mensajes de WhatsApp</h3>
+            <p class="desc">Configura el texto, color, enlace de destino, número de WhatsApp y mensaje predeterminado de cada botón de la web.</p>
+            <div id="buttonsListContainer" class="list-stack"></div>
+            <div class="action-bar">
+              <button type="button" class="btn btn-outline" onclick="renderButtonsEditor()">Cancelar</button>
+              <button type="button" class="btn btn-primary" onclick="saveButtonsChanges()">💾 Guardar Botones y Enlaces</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 9: CONFIGURACIÓN Y SEGURIDAD -->
+        <section id="tab-configuracion" class="tab-panel">
+          <div class="panel-card">
+            <h3>Seguridad: Actualizar Credenciales del Administrador</h3>
+            <p class="desc">Cambia tu usuario, correo electrónico o contraseña de acceso a `/admin`. Las contraseñas se cifran con bcrypt.</p>
+            <form id="credentialsForm" class="form-grid cols-2">
+              <div class="field">
+                <label>Nombre de Usuario</label>
+                <input type="text" id="cred_username" class="input" required minlength="3">
+              </div>
+              <div class="field">
+                <label>Correo Electrónico</label>
+                <input type="email" id="cred_email" class="input" required>
+              </div>
+              <div class="field">
+                <label>Contraseña Actual (Obligatoria para autorizar cambios)</label>
+                <input type="password" id="cred_currentPassword" class="input" required>
+              </div>
+              <div class="field">
+                <label>Nueva Contraseña (Dejar en blanco para conservar la actual)</label>
+                <input type="password" id="cred_newPassword" class="input" minlength="8" placeholder="Mínimo 8 caracteres">
+              </div>
+              <div class="field full">
+                <div class="action-bar" style="margin-top:4px">
+                  <button type="submit" class="btn btn-primary">🔒 Actualizar Credenciales</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="panel-card">
+            <h3>Respaldo y Portabilidad de Base de Datos</h3>
+            <p class="desc">Descarga una copia completa de tus productos, imágenes y configuración, o restaura un respaldo previo.</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+              <a href="/api/admin/backup" class="btn btn-outline">⬇️ Descargar Copia de Seguridad (.json)</a>
+              <label class="btn btn-outline">
+                ⬆️ Restaurar desde archivo (.json)
+                <input type="file" accept="application/json" style="display:none" onchange="restoreBackupFile(this)">
+              </label>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL DE CREAR / EDITAR PRODUCTO -->
+  <div id="productModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="productModalTitle">Editar Producto</h3>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeProductModal()">✕</button>
+      </div>
+      <form id="productForm" class="form-grid cols-2">
+        <input type="hidden" id="prod_id">
+        <div class="field full">
+          <label>Nombre del Producto</label>
+          <input type="text" id="prod_name" class="input" required placeholder="Ej: Taza con plato: Mamá">
+        </div>
+        <div class="field full">
+          <label>Descripción</label>
+          <textarea id="prod_description" class="textarea" placeholder="Describe los detalles del producto..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Categoría</label>
+          <select id="prod_categoryId" class="select"></select>
+        </div>
+        <div class="field">
+          <label>Orden de aparición</label>
+          <input type="number" id="prod_order" class="input" min="1" value="1">
+        </div>
+
+        <div class="field">
+          <label>Precio Numérico (COP - Opcional)</label>
+          <input type="number" id="prod_price" class="input" placeholder="Ej: 25000">
+        </div>
+        <div class="field">
+          <label>Texto de Precio / Etiqueta</label>
+          <input type="text" id="prod_priceLabel" class="input" placeholder="Ej: Solicita precio o $25.000">
+        </div>
+
+        <div class="field full">
+          <label class="checkbox-row">
+            <input type="checkbox" id="prod_consultPrice">
+            <span>Mostrar como “Consultar precio / Solicita precio” en lugar de valor fijo</span>
+          </label>
+        </div>
+
+        <!-- Fotografía Principal del Producto -->
+        <div class="field full">
+          <label>Fotografía Principal del Producto</label>
+          <div class="img-Selector-box">
+            <div class="img-preview-frame" style="width:96px;height:96px">
+              <img id="prev_prodMainImage" src="/api/media/img_p1" alt="Vista previa">
+            </div>
+            <div style="flex:1;min-width:200px">
+              <input type="text" id="prod_mainImage" class="input" style="margin-bottom:8px" required>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <label class="btn btn-gold btn-sm">
+                  📤 Subir foto desde celular/PC
+                  <input type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadAndAssign(this, 'prod_mainImage', 'prev_prodMainImage', 'product')">
+                </label>
+                <button type="button" class="btn btn-outline btn-sm" onclick="openMediaPicker('prod_mainImage', 'prev_prodMainImage')">Elegir de galería</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Texto del Botón de Consulta</label>
+          <input type="text" id="prod_consultButtonText" class="input" value="Consultar producto">
+        </div>
+        <div class="field">
+          <label>Texto del Botón de Ampliar Foto</label>
+          <input type="text" id="prod_viewPhotoButtonText" class="input" value="Ver foto">
+        </div>
+
+        <div class="field full">
+          <label>Mensaje de WhatsApp del Producto (Usa <code>{nombre}</code> para insertar el nombre actualizado automáticamente)</label>
+          <textarea id="prod_whatsappMessage" class="textarea"></textarea>
+        </div>
+
+        <div class="field full" style="display:flex;gap:18px;flex-wrap:wrap">
+          <label class="checkbox-row">
+            <input type="checkbox" id="prod_active" checked>
+            <span>Producto Activo (Visible en el catálogo público)</span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="prod_inCarousel" checked>
+            <span>Incluir en el Carrusel 3D (“Gira y explora”)</span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="prod_featured">
+            <span>Destacado</span>
+          </label>
+        </div>
+
+        <div class="field full">
+          <div class="action-bar">
+            <button type="button" class="btn btn-outline" onclick="closeProductModal()">Cancelar</button>
+            <button type="submit" id="saveProductBtn" class="btn btn-primary">💾 Guardar Producto</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL DE CREAR / EDITAR CATEGORÍA -->
+  <div id="categoryModal" class="modal-backdrop">
+    <div class="modal-box" style="max-width:500px">
+      <div class="modal-header">
+        <h3 id="categoryModalTitle">Categoría</h3>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeCategoryModal()">✕</button>
+      </div>
+      <form id="categoryForm" class="form-grid">
+        <input type="hidden" id="cat_id">
+        <div class="field">
+          <label>Nombre de la Categoría</label>
+          <input type="text" id="cat_name" class="input" required placeholder="Ej: Mugs Mágicos">
+        </div>
+        <div class="field">
+          <label>Descripción</label>
+          <textarea id="cat_description" class="textarea"></textarea>
+        </div>
+        <div class="field">
+          <label>Orden</label>
+          <input type="number" id="cat_order" class="input" value="1" min="1">
+        </div>
+        <div class="field">
+          <label class="checkbox-row">
+            <input type="checkbox" id="cat_active" checked>
+            <span>Categoría Activa</span>
+          </label>
+        </div>
+        <div class="action-bar">
+          <button type="button" class="btn btn-outline" onclick="closeCategoryModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">💾 Guardar Categoría</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL SELECTOR DE GALERÍA DE IMÁGENES -->
+  <div id="mediaPickerModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Seleccionar Imagen de la Biblioteca</h3>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeMediaPicker()">✕</button>
+      </div>
+      <div id="mediaPickerGrid" class="items-grid"></div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIRMACIÓN -->
+  <div id="confirmModal" class="modal-backdrop">
+    <div class="modal-box" style="max-width:420px">
+      <div class="modal-header">
+        <h3 id="confirmModalTitle">Confirmar acción</h3>
+      </div>
+      <p id="confirmModalMessage" style="margin-bottom:20px;color:var(--text)"></p>
+      <div class="action-bar" style="margin-top:0">
+        <button type="button" class="btn btn-outline" onclick="closeConfirmModal()">Cancelar</button>
+        <button type="button" id="confirmModalAcceptBtn" class="btn btn-danger">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST DE NOTIFICACIÓN -->
+  <div id="toastBanner" class="toast-banner">
+    <span id="toastText">Guardado correctamente</span>
+    <button type="button" class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:#fff" onclick="hideToast()">✕</button>
+  </div>
+
+  <script>
+    let STATE = null;
+    let SESSION_TOKEN = null;
+    let pickerTargetInputId = null;
+    let pickerTargetPreviewId = null;
+    let pendingConfirmCallback = null;
+
+    function showToast(message, type = 'success') {
+      const banner = document.getElementById('toastBanner');
+      const text = document.getElementById('toastText');
+      banner.className = `toast-banner show ${type}`;
+      text.textContent = message;
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(hideToast, 4500);
+    }
+
+    function hideToast() {
+      document.getElementById('toastBanner').classList.remove('show');
+    }
+
+    function showAuthAlert(message, type = 'error') {
+      const el = document.getElementById('authAlert');
+      if (!message) {
+        el.className = 'inline-alert';
+        el.textContent = '';
+        return;
+      }
+      el.className = `inline-alert ${type}`;
+      el.textContent = message;
+    }
+
+    function openConfirmModal(title, message, onConfirm) {
+      document.getElementById('confirmModalTitle').textContent = title;
+      document.getElementById('confirmModalMessage').textContent = message;
+      pendingConfirmCallback = onConfirm;
+      document.getElementById('confirmModal').classList.add('open');
+    }
+
+    function closeConfirmModal() {
+      pendingConfirmCallback = null;
+      document.getElementById('confirmModal').classList.remove('open');
+    }
+
+    document.getElementById('confirmModalAcceptBtn').addEventListener('click', () => {
+      const cb = pendingConfirmCallback;
+      closeConfirmModal();
+      if (cb) cb();
+    });
+
+    let IS_SERVER_MODE = true;
+
+    async function hashPassword(str) {
+      const enc = new TextEncoder().encode(str);
+      const buf = await crypto.subtle.digest('SHA-256', enc);
+      return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function updateModeBadge() {
+      const badge = document.getElementById('modeStatusBadge');
+      if (!badge) return;
+      if (IS_SERVER_MODE) {
+        badge.className = 'badge green';
+        badge.textContent = '● Servidor API Conectado';
+        badge.title = 'Conexión activa con el backend Node.js en tiempo real';
+      } else {
+        badge.className = 'badge gold';
+        badge.textContent = '● Modo Local (Host Estático)';
+        badge.title = 'Operando sin backend en servidor estático. Los cambios se guardan localmente y puedes descargar database.json.';
+      }
+    }
+
+    async function getOrInitLocalDb() {
+      const stored = localStorage.getItem('angel_db');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch {}
+      }
+      try {
+        const res = await fetch('/data/database.json');
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem('angel_db', JSON.stringify(data));
+          return data;
+        }
+      } catch {}
+      return {
+        version: 1,
+        updatedAt: new Date().toISOString(),
+        identity: {
+          commercialName: "Personalizados Ángel",
+          titlePrefix: "Personalizados",
+          titleMain: "ÁNGEL",
+          subtitle: "Tu familia, tu estilo, nuestros diseños. Mugs y detalles personalizados hechos a tu medida.",
+          description: "Mugs clásicos, mágicos, metalizados, glitter y detalles personalizados con diseño exclusivo en Medellín.",
+          mainLogo: "/api/media/img_logo",
+          headerLogo: "/api/media/img_logo",
+          avatarImage: "/api/media/img_logo",
+          coverImage: "/api/media/img_cover",
+          favicon: "/api/media/img_logo",
+          phone: "318 788 8765",
+          whatsappNumber: "573187888765",
+          address: "Calle 95 #47-39, Aranjuez",
+          city: "Medellín, Colombia",
+          footerText: "© Personalizados Ángel"
+        },
+        visual: {
+          themeMode: "auto",
+          titleSizeScale: 1,
+          sectionSpacing: 56,
+          cardBorderRadius: 18,
+          buttonBorderRadius: 14
+        },
+        categories: [],
+        products: [],
+        sections: [],
+        buttons: [],
+        images: [],
+        marqueeItems: []
+      };
+    }
+
+    function saveLocalDb(data) {
+      data.updatedAt = new Date().toISOString();
+      localStorage.setItem('angel_db', JSON.stringify(data));
+      return data;
+    }
+
+    function exportDatabaseFile() {
+      const dataToExport = STATE ? {
+        version: STATE.version || 1,
+        updatedAt: new Date().toISOString(),
+        admins: [],
+        identity: STATE.identity,
+        visual: STATE.visual,
+        categories: STATE.categories,
+        products: STATE.products,
+        sections: STATE.sections,
+        buttons: STATE.buttons,
+        images: STATE.images,
+        marqueeItems: STATE.marqueeItems,
+      } : null;
+      if (!dataToExport) {
+        showToast('No hay datos para exportar', 'error');
+        return;
+      }
+      const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'database.json';
+      a.click();
+      showToast('Copia de database.json descargada');
+    }
+
+    async function handleLocalApi(url, options = {}) {
+      const method = (options.method || 'GET').toUpperCase();
+      const db = await getOrInitLocalDb();
+      let body = {};
+      if (options.body && typeof options.body === 'string') {
+        try { body = JSON.parse(options.body); } catch {}
+      }
+
+      // 1. Auth routes
+      if (url === '/api/auth/status') {
+        const localAdmin = localStorage.getItem('angel_local_admin');
+        const isLogged = sessionStorage.getItem('angel_local_session') === 'true';
+        if (!localAdmin) {
+          return { initialized: false, authenticated: false, admin: null };
+        }
+        const adminObj = JSON.parse(localAdmin);
+        return {
+          initialized: true,
+          authenticated: isLogged,
+          admin: isLogged ? { id: 'admin_local', username: adminObj.username, email: adminObj.email } : null
+        };
+      }
+
+      if (url === '/api/auth/setup') {
+        const { username, email, password } = body;
+        if (!username || username.trim().length < 3) throw new Error('Usuario debe tener al menos 3 caracteres');
+        if (!password || password.length < 8) throw new Error('Contraseña debe tener al menos 8 caracteres');
+        const hash = await hashPassword(password);
+        localStorage.setItem('angel_local_admin', JSON.stringify({
+          username: username.trim(),
+          email: (email || `${username}@personalizadosangel.com`).trim(),
+          passwordHash: hash
+        }));
+        sessionStorage.setItem('angel_local_session', 'true');
+        return { success: true, token: 'local_token' };
+      }
+
+      if (url === '/api/auth/login') {
+        const { username, password } = body;
+        const localAdmin = localStorage.getItem('angel_local_admin');
+        if (!localAdmin) throw new Error('No hay cuenta configurada aún. Realiza el registro inicial.');
+        const adminObj = JSON.parse(localAdmin);
+        const hash = await hashPassword(password);
+        const matchesUser = adminObj.username.toLowerCase() === String(username).trim().toLowerCase() ||
+                            adminObj.email.toLowerCase() === String(username).trim().toLowerCase();
+        if (!matchesUser || adminObj.passwordHash !== hash) {
+          throw new Error('Credenciales inválidas. Verifica tu usuario y contraseña.');
+        }
+        sessionStorage.setItem('angel_local_session', 'true');
+        return { success: true, token: 'local_token' };
+      }
+
+      if (url === '/api/auth/logout') {
+        sessionStorage.removeItem('angel_local_session');
+        return { success: true };
+      }
+
+      // 2. Admin State
+      if (url === '/api/admin/state') {
+        const stats = {
+          totalProducts: (db.products || []).length,
+          activeProducts: (db.products || []).filter((p) => p.active).length,
+          inactiveProducts: (db.products || []).filter((p) => !p.active).length,
+          totalCategories: (db.categories || []).length,
+          activeCategories: (db.categories || []).filter((c) => c.active).length,
+          totalImages: (db.images || []).length,
+          activeSections: (db.sections || []).filter((s) => s.active).length,
+          totalSections: (db.sections || []).length,
+          updatedAt: db.updatedAt || new Date().toISOString(),
+        };
+        return { stats, ...db };
+      }
+
+      // 3. Identity
+      if (url === '/api/admin/identity') {
+        db.identity = { ...db.identity, ...body };
+        saveLocalDb(db);
+        return { success: true, identity: db.identity, updatedAt: db.updatedAt };
+      }
+
+      // 4. Visual
+      if (url === '/api/admin/visual') {
+        db.visual = { ...db.visual, ...body };
+        saveLocalDb(db);
+        return { success: true, visual: db.visual, updatedAt: db.updatedAt };
+      }
+
+      // 5. Products CRUD
+      if (url === '/api/admin/products' && method === 'POST') {
+        const newProd = {
+          id: `prod_${Date.now()}`,
+          order: (db.products || []).length + 1,
+          active: true,
+          featured: false,
+          inCarousel: true,
+          consultPrice: true,
+          price: null,
+          priceLabel: 'Solicita precio',
+          mainImage: '/api/media/img_p1',
+          galleryImages: ['/api/media/img_p1'],
+          categoryId: (db.categories && db.categories[0] ? db.categories[0].id : 'cat_todos'),
+          ...body,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        db.products.push(newProd);
+        saveLocalDb(db);
+        return { success: true, product: newProd, updatedAt: db.updatedAt };
+      }
+
+      if (url === '/api/admin/products/reorder') {
+        const { orderedIds } = body;
+        if (Array.isArray(orderedIds)) {
+          orderedIds.forEach((id, idx) => {
+            const p = db.products.find(x => x.id === id);
+            if (p) p.order = idx + 1;
+          });
+        }
+        saveLocalDb(db);
+        return { success: true, products: db.products, updatedAt: db.updatedAt };
+      }
+
+      if (url.startsWith('/api/admin/products/') && method === 'PUT') {
+        const id = url.split('/').pop();
+        const idx = db.products.findIndex(p => p.id === id);
+        if (idx !== -1) {
+          db.products[idx] = { ...db.products[idx], ...body, updatedAt: new Date().toISOString() };
+          saveLocalDb(db);
+          return { success: true, product: db.products[idx], updatedAt: db.updatedAt };
+        }
+        throw new Error('Producto no encontrado');
+      }
+
+      if (url.startsWith('/api/admin/products/') && method === 'DELETE') {
+        const id = url.split('/').pop();
+        db.products = db.products.filter(p => p.id !== id);
+        saveLocalDb(db);
+        return { success: true, updatedAt: db.updatedAt };
+      }
+
+      // 6. Categories CRUD
+      if (url === '/api/admin/categories' && method === 'POST') {
+        const newCat = {
+          id: `cat_${Date.now()}`,
+          order: (db.categories || []).length + 1,
+          active: true,
+          ...body
+        };
+        db.categories.push(newCat);
+        saveLocalDb(db);
+        return { success: true, category: newCat, updatedAt: db.updatedAt };
+      }
+
+      if (url.startsWith('/api/admin/categories/') && method === 'PUT') {
+        const id = url.split('/').pop();
+        const idx = db.categories.findIndex(c => c.id === id);
+        if (idx !== -1) {
+          db.categories[idx] = { ...db.categories[idx], ...body };
+          saveLocalDb(db);
+          return { success: true, category: db.categories[idx], updatedAt: db.updatedAt };
+        }
+        throw new Error('Categoría no encontrada');
+      }
+
+      if (url.startsWith('/api/admin/categories/') && method === 'DELETE') {
+        const id = url.split('/').pop();
+        db.categories = db.categories.filter(c => c.id !== id);
+        saveLocalDb(db);
+        return { success: true, updatedAt: db.updatedAt };
+      }
+
+      // 7. Sections & Marquee
+      if (url === '/api/admin/sections') {
+        if (body.sections) db.sections = body.sections;
+        if (body.marqueeItems) db.marqueeItems = body.marqueeItems;
+        saveLocalDb(db);
+        return { success: true, sections: db.sections, marqueeItems: db.marqueeItems, updatedAt: db.updatedAt };
+      }
+
+      // 8. Buttons
+      if (url === '/api/admin/buttons') {
+        if (body.buttons) db.buttons = body.buttons;
+        saveLocalDb(db);
+        return { success: true, buttons: db.buttons, updatedAt: db.updatedAt };
+      }
+
+      // 9. Images
+      if (url === '/api/admin/images' && method === 'POST') {
+        const { name, category, replaceId, assignTo, base64Data } = body;
+        const now = new Date().toISOString();
+        const newImg = {
+          id: replaceId || `img_${Date.now()}`,
+          key: replaceId || `img_${Date.now()}`,
+          name: name || 'Imagen',
+          category: category || 'product',
+          url: base64Data || '',
+          mimeType: 'image/jpeg',
+          sizeBytes: (base64Data || '').length,
+          createdAt: now
+        };
+        if (replaceId) {
+          const idx = (db.images || []).findIndex(i => i.id === replaceId || i.key === replaceId);
+          if (idx !== -1) db.images[idx] = newImg;
+          else db.images.unshift(newImg);
+        } else {
+          db.images.unshift(newImg);
+        }
+        if (assignTo === 'mainLogo') { db.identity.mainLogo = newImg.url; db.identity.headerLogo = newImg.url; }
+        else if (assignTo === 'coverImage') { db.identity.coverImage = newImg.url; }
+        else if (assignTo === 'favicon') { db.identity.favicon = newImg.url; }
+        saveLocalDb(db);
+        return { success: true, image: newImg, publicUrl: newImg.url, updatedAt: db.updatedAt };
+      }
+
+      if (url.startsWith('/api/admin/images/') && method === 'DELETE') {
+        const id = url.split('/').pop();
+        db.images = (db.images || []).filter(i => i.id !== id && i.key !== id);
+        saveLocalDb(db);
+        return { success: true, updatedAt: db.updatedAt };
+      }
+
+      // 10. Credentials
+      if (url === '/api/admin/credentials') {
+        const { newUsername, newEmail, newPassword } = body;
+        const current = JSON.parse(localStorage.getItem('angel_local_admin') || '{}');
+        if (newUsername) current.username = newUsername.trim();
+        if (newEmail) current.email = newEmail.trim();
+        if (newPassword) current.passwordHash = await hashPassword(newPassword);
+        localStorage.setItem('angel_local_admin', JSON.stringify(current));
+        return { success: true, admin: { username: current.username, email: current.email } };
+      }
+
+      // 11. Restore
+      if (url === '/api/admin/restore') {
+        const restored = { ...body, updatedAt: new Date().toISOString() };
+        saveLocalDb(restored);
+        return { success: true, updatedAt: restored.updatedAt };
+      }
+
+      return { success: true };
+    }
+
+    async function apiFetch(url, options = {}) {
+      if (!IS_SERVER_MODE && url.startsWith('/api/')) {
+        return handleLocalApi(url, options);
+      }
+
+      const headers = { ...(options.headers || {}) };
+      if (SESSION_TOKEN) {
+        headers['Authorization'] = `Bearer ${SESSION_TOKEN}`;
+      }
+      if (!(options.body instanceof FormData) && !headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
+      }
+
+      let response;
+      try {
+        response = await fetch(url, {
+          ...options,
+          headers,
+          credentials: 'same-origin',
+        });
+      } catch (netErr) {
+        console.warn('Fallo de red hacia el servidor API, cambiando a Modo Local:', netErr);
+        IS_SERVER_MODE = false;
+        updateModeBadge();
+        return handleLocalApi(url, options);
+      }
+
+      if (response.status === 404 && url.startsWith('/api/')) {
+        console.warn('Ruta API 404 no encontrada en este host (modo estático), activando soporte local.');
+        IS_SERVER_MODE = false;
+        updateModeBadge();
+        return handleLocalApi(url, options);
+      }
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        if (response.status === 401 && document.getElementById('adminApp').classList.contains('active')) {
+          showAuthScreen(true, 'Tu sesión ha expirado. Inicia sesión nuevamente.');
+        }
+        throw new Error(data.error || `Error del servidor (${response.status})`);
+      }
+      return data;
+    }
+
+    async function checkAuthStatus() {
+      try {
+        const status = await apiFetch('/api/auth/status');
+        updateModeBadge();
+        if (!status.initialized) {
+          showAuthScreen(false);
+        } else if (status.authenticated) {
+          document.getElementById('sideAdminUser').textContent = `Admin: ${status.admin.username}`;
+          document.getElementById('cred_username').value = status.admin.username || '';
+          document.getElementById('cred_email').value = status.admin.email || '';
+          await loadAdminState();
+          document.getElementById('authScreen').style.display = 'none';
+          document.getElementById('adminApp').classList.add('active');
+        } else {
+          showAuthScreen(true);
+        }
+      } catch (err) {
+        showAuthScreen(true, err.message);
+      }
+    }
+
+    function showAuthScreen(isInitialized, alertMsg = '') {
+      document.getElementById('adminApp').classList.remove('active');
+      document.getElementById('authScreen').style.display = 'flex';
+      const loginForm = document.getElementById('loginForm');
+      const setupForm = document.getElementById('setupForm');
+      const setupBadge = document.getElementById('setupBadge');
+      const sub = document.getElementById('authSubtitle');
+
+      if (isInitialized) {
+        loginForm.style.display = 'grid';
+        setupForm.style.display = 'none';
+        setupBadge.style.display = 'none';
+        sub.textContent = 'Inicia sesión con tus credenciales de administrador';
+      } else {
+        loginForm.style.display = 'none';
+        setupForm.style.display = 'grid';
+        setupBadge.style.display = 'inline-block';
+        sub.textContent = 'Configura por primera vez tu usuario y contraseña de propietario.';
+      }
+      showAuthAlert(alertMsg, 'error');
+    }
+
+    // Login Form Submit
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showAuthAlert('');
+      const btn = document.getElementById('loginSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Verificando credenciales...';
+      try {
+        const username = document.getElementById('loginUser').value.trim();
+        const password = document.getElementById('loginPass').value;
+        const res = await apiFetch('/api/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ username, password }),
+        });
+        SESSION_TOKEN = res.token;
+        document.getElementById('loginPass').value = '';
+        await checkAuthStatus();
+        showToast('Bienvenido al panel administrativo');
+      } catch (err) {
+        showAuthAlert(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Ingresar al Panel Administrativo';
+      }
+    });
+
+    // Initial Setup Form Submit
+    document.getElementById('setupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showAuthAlert('');
+      const pass = document.getElementById('setupPass').value;
+      const confirm = document.getElementById('setupPassConfirm').value;
+      if (pass !== confirm) {
+        showAuthAlert('Las contraseñas no coinciden.', 'error');
+        return;
+      }
+      const btn = document.getElementById('setupSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Creando cuenta segura...';
+      try {
+        const username = document.getElementById('setupUser').value.trim();
+        const email = document.getElementById('setupEmail').value.trim();
+        const res = await apiFetch('/api/auth/setup', {
+          method: 'POST',
+          body: JSON.stringify({ username, email, password: pass }),
+        });
+        SESSION_TOKEN = res.token;
+        await checkAuthStatus();
+        showToast('Cuenta de administrador creada correctamente');
+      } catch (err) {
+        showAuthAlert(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Crear Cuenta de Administrador y Entrar';
+      }
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await apiFetch('/api/auth/logout', { method: 'POST' });
+      } catch {}
+      SESSION_TOKEN = null;
+      STATE = null;
+      showAuthScreen(true);
+      showToast('Sesión cerrada correctamente');
+    });
+
+    // Navigation Tabs
+    const tabTitles = {
+      resumen: 'Resumen del Sistema',
+      identidad: 'Identidad del Negocio',
+      productos: 'Administración de Productos',
+      categorias: 'Categorías y Catálogo',
+      imagenes: 'Administrador de Fotografías e Imágenes',
+      secciones: 'Contenido y Secciones de la Página',
+      visual: 'Diseño, Colores, Tipografía y Efectos',
+      botones: 'Botones y Enlaces de WhatsApp',
+      configuracion: 'Configuración y Seguridad',
+    };
+
+    function switchTab(tabKey) {
+      document.querySelectorAll('.nav-btn[data-tab]').forEach((b) => {
+        b.classList.toggle('active', b.dataset.tab === tabKey);
+      });
+      document.querySelectorAll('.tab-panel').forEach((p) => {
+        p.classList.toggle('active', p.id === `tab-${tabKey}`);
+      });
+      document.getElementById('currentTabTitle').textContent = tabTitles[tabKey] || 'Panel Administrativo';
+      document.getElementById('navList').classList.remove('open');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.nav-btn[data-tab]').forEach((btn) => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+      document.getElementById('navList').classList.toggle('open');
+    });
+
+    document.getElementById('quickNewProductBtn').addEventListener('click', () => {
+      switchTab('productos');
+      openProductModal();
+    });
+
+    // LOAD FULL STATE FROM BACKEND
+    async function loadAdminState() {
+      const data = await apiFetch('/api/admin/state');
+      STATE = data;
+      renderAllViews();
+    }
+
+    function renderAllViews() {
+      if (!STATE) return;
+      renderDashboardStats();
+      renderIdentityForm();
+      renderProductsList();
+      renderCategoriesList();
+      renderImagesLibrary();
+      renderSectionsEditor();
+      renderVisualForm();
+      renderButtonsEditor();
+    }
+
+    function renderDashboardStats() {
+      const s = STATE.stats;
+      document.getElementById('statTotalProducts').textContent = s.totalProducts;
+      document.getElementById('statActiveProducts').textContent = `${s.activeProducts} activos · ${s.inactiveProducts} ocultos`;
+      document.getElementById('statTotalCategories').textContent = s.totalCategories;
+      document.getElementById('statActiveCategories').textContent = `${s.activeCategories} activas`;
+      document.getElementById('statTotalImages').textContent = s.totalImages;
+
+      const dt = new Date(s.updatedAt);
+      document.getElementById('statUpdatedTime').textContent = dt.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('statUpdatedDate').textContent = dt.toLocaleDateString('es-CO', { dateStyle: 'medium' });
+      document.getElementById('lastUpdatedLabel').textContent = `Último cambio guardado: ${dt.toLocaleString('es-CO')}`;
+
+      document.getElementById('sideBrandName').textContent = STATE.identity.commercialName;
+      document.getElementById('sideLogo').src = STATE.identity.mainLogo;
+      document.getElementById('authLogo').src = STATE.identity.mainLogo;
+    }
+
+    // A. IDENTIDAD DEL NEGOCIO
+    function renderIdentityForm() {
+      const id = STATE.identity;
+      document.getElementById('id_commercialName').value = id.commercialName || '';
+      document.getElementById('id_titlePrefix').value = id.titlePrefix || '';
+      document.getElementById('id_titleMain').value = id.titleMain || '';
+      document.getElementById('id_subtitle').value = id.subtitle || '';
+      document.getElementById('id_description').value = id.description || '';
+      document.getElementById('id_mainLogo').value = id.mainLogo || '';
+      document.getElementById('prev_mainLogo').src = id.mainLogo || '/api/media/img_logo';
+      document.getElementById('id_coverImage').value = id.coverImage || '';
+      document.getElementById('prev_coverImage').src = id.coverImage || '/api/media/img_cover';
+      document.getElementById('id_favicon').value = id.favicon || id.mainLogo || '';
+      document.getElementById('prev_favicon').src = id.favicon || id.mainLogo || '/api/media/img_logo';
+      document.getElementById('id_footerText').value = id.footerText || '';
+      document.getElementById('id_whatsappNumber').value = id.whatsappNumber || '';
+      document.getElementById('id_phone').value = id.phone || '';
+      document.getElementById('id_address').value = id.address || '';
+      document.getElementById('id_city').value = id.city || '';
+      document.getElementById('id_addressNote').value = id.addressNote || '';
+      document.getElementById('id_instagram').value = id.socialLinks?.instagram || '';
+      document.getElementById('id_facebook').value = id.socialLinks?.facebook || '';
+      document.getElementById('id_googleMaps').value = id.socialLinks?.googleMaps || '';
+    }
+
+    document.getElementById('identityForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const payload = {
+          commercialName: document.getElementById('id_commercialName').value.trim(),
+          titlePrefix: document.getElementById('id_titlePrefix').value.trim(),
+          titleMain: document.getElementById('id_titleMain').value.trim(),
+          subtitle: document.getElementById('id_subtitle').value.trim(),
+          description: document.getElementById('id_description').value.trim(),
+          mainLogo: document.getElementById('id_mainLogo').value.trim(),
+          headerLogo: document.getElementById('id_mainLogo').value.trim(),
+          coverImage: document.getElementById('id_coverImage').value.trim(),
+          favicon: document.getElementById('id_favicon').value.trim(),
+          footerText: document.getElementById('id_footerText').value.trim(),
+          whatsappNumber: document.getElementById('id_whatsappNumber').value.trim(),
+          phone: document.getElementById('id_phone').value.trim(),
+          address: document.getElementById('id_address').value.trim(),
+          city: document.getElementById('id_city').value.trim(),
+          addressNote: document.getElementById('id_addressNote').value.trim(),
+          socialLinks: {
+            instagram: document.getElementById('id_instagram').value.trim(),
+            facebook: document.getElementById('id_facebook').value.trim(),
+            tiktok: '',
+            googleMaps: document.getElementById('id_googleMaps').value.trim(),
+          },
+        };
+        await apiFetch('/api/admin/identity', {
+          method: 'PUT',
+          body: JSON.stringify(payload),
+        });
+        await loadAdminState();
+        showToast('Identidad del negocio guardada y publicada');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+
+    // C. PRODUCTOS
+    function renderProductsList() {
+      const grid = document.getElementById('productsGrid');
+      document.getElementById('productsCountLabel').textContent = STATE.products.length;
+      const catMap = {};
+      STATE.categories.forEach((c) => (catMap[c.id] = c.name));
+
+      grid.innerHTML = STATE.products
+        .map((p, idx) => {
+          const priceDisplay = p.consultPrice || p.price === null
+            ? (p.priceLabel || 'Solicita precio')
+            : `$${Number(p.price).toLocaleString('es-CO')}`;
+
+          return `
+            <div class="item-card ${p.active ? '' : 'inactive'}">
+              <div class="item-thumb">
+                <img src="${p.mainImage}" alt="${escapeHtml(p.name)}" loading="lazy">
+                <div class="item-badges">
+                  <span class="badge ${p.active ? 'green' : 'gray'}">${p.active ? 'Activo' : 'Inactivo'}</span>
+                  ${p.inCarousel ? '<span class="badge gold">Carrusel 3D</span>' : ''}
+                  <span class="badge">#${p.order}</span>
+                </div>
+              </div>
+              <div class="item-body">
+                <h4>${escapeHtml(p.name)}</h4>
+                <p>${escapeHtml(p.description)}</p>
+                <div class="item-price">${escapeHtml(priceDisplay)} · <small>${escapeHtml(catMap[p.categoryId] || 'General')}</small></div>
+                <div class="item-actions">
+                  <button type="button" class="btn btn-primary btn-sm" onclick="openProductModal('${p.id}')">✏️ Editar</button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="toggleProductActive('${p.id}')">
+                    ${p.active ? '🙈 Ocultar' : '👁️ Activar'}
+                  </button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="moveProductOrder(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>↑</button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="moveProductOrder(${idx}, 1)" ${idx === STATE.products.length - 1 ? 'disabled' : ''}>↓</button>
+                  <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteProduct('${p.id}')">🗑️</button>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function openProductModal(productId = null) {
+      const catSelect = document.getElementById('prod_categoryId');
+      catSelect.innerHTML = STATE.categories
+        .map((c) => `<option value="${c.id}">${escapeHtml(c.name)}</option>`)
+        .join('');
+
+      const prod = productId ? STATE.products.find((p) => p.id === productId) : null;
+      document.getElementById('productModalTitle').textContent = prod ? `Editar: ${prod.name}` : 'Crear Nuevo Producto';
+      document.getElementById('prod_id').value = prod ? prod.id : '';
+      document.getElementById('prod_name').value = prod ? prod.name : '';
+      document.getElementById('prod_description').value = prod ? prod.description : '';
+      document.getElementById('prod_categoryId').value = prod ? prod.categoryId : (STATE.categories[0]?.id || '');
+      document.getElementById('prod_order').value = prod ? prod.order : STATE.products.length + 1;
+      document.getElementById('prod_price').value = prod && prod.price !== null ? prod.price : '';
+      document.getElementById('prod_priceLabel').value = prod ? prod.priceLabel : 'Solicita precio';
+      document.getElementById('prod_consultPrice').checked = prod ? Boolean(prod.consultPrice) : true;
+      document.getElementById('prod_mainImage').value = prod ? prod.mainImage : '/api/media/img_p1';
+      document.getElementById('prev_prodMainImage').src = prod ? prod.mainImage : '/api/media/img_p1';
+      document.getElementById('prod_consultButtonText').value = prod ? prod.consultButtonText : 'Consultar producto';
+      document.getElementById('prod_viewPhotoButtonText').value = prod ? prod.viewPhotoButtonText : 'Ver foto';
+      document.getElementById('prod_whatsappMessage').value = prod
+        ? prod.whatsappMessage
+        : 'Hola, buenas. Vi su página web y estoy interesado en el producto {nombre}. ¿Me pueden brindar más información sobre el precio, las características y la disponibilidad? Gracias.';
+      document.getElementById('prod_active').checked = prod ? Boolean(prod.active) : true;
+      document.getElementById('prod_inCarousel').checked = prod ? Boolean(prod.inCarousel) : true;
+      document.getElementById('prod_featured').checked = prod ? Boolean(prod.featured) : true;
+
+      document.getElementById('productModal').classList.add('open');
+    }
+
+    function closeProductModal() {
+      document.getElementById('productModal').classList.remove('open');
+    }
+
+    document.getElementById('productForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('prod_id').value;
+      const payload = {
+        name: document.getElementById('prod_name').value.trim(),
+        description: document.getElementById('prod_description').value.trim(),
+        categoryId: document.getElementById('prod_categoryId').value,
+        order: Number(document.getElementById('prod_order').value) || 1,
+        price: document.getElementById('prod_price').value !== '' ? Number(document.getElementById('prod_price').value) : null,
+        priceLabel: document.getElementById('prod_priceLabel').value.trim() || 'Solicita precio',
+        consultPrice: document.getElementById('prod_consultPrice').checked,
+        mainImage: document.getElementById('prod_mainImage').value.trim(),
+        consultButtonText: document.getElementById('prod_consultButtonText').value.trim() || 'Consultar producto',
+        viewPhotoButtonText: document.getElementById('prod_viewPhotoButtonText').value.trim() || 'Ver foto',
+        whatsappMessage: document.getElementById('prod_whatsappMessage').value.trim(),
+        active: document.getElementById('prod_active').checked,
+        inCarousel: document.getElementById('prod_inCarousel').checked,
+        featured: document.getElementById('prod_featured').checked,
+      };
+
+      try {
+        if (id) {
+          await apiFetch(`/api/admin/products/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(payload),
+          });
+          showToast('Producto actualizado correctamente');
+        } else {
+          await apiFetch('/api/admin/products', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+          });
+          showToast('Producto creado y publicado en el catálogo');
+        }
+        closeProductModal();
+        await loadAdminState();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+
+    async function toggleProductActive(id) {
+      const prod = STATE.products.find((p) => p.id === id);
+      if (!prod) return;
+      try {
+        await apiFetch(`/api/admin/products/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ active: !prod.active }),
+        });
+        await loadAdminState();
+        showToast(prod.active ? 'Producto ocultado del catálogo público' : 'Producto activado en el catálogo');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function moveProductOrder(index, direction) {
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= STATE.products.length) return;
+      const ids = STATE.products.map((p) => p.id);
+      const temp = ids[index];
+      ids[index] = ids[targetIndex];
+      ids[targetIndex] = temp;
+      try {
+        await apiFetch('/api/admin/products/reorder', {
+          method: 'PUT',
+          body: JSON.stringify({ orderedIds: ids }),
+        });
+        await loadAdminState();
+        showToast('Orden del catálogo actualizado');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    function confirmDeleteProduct(id) {
+      const prod = STATE.products.find((p) => p.id === id);
+      if (!prod) return;
+      openConfirmModal(
+        'Eliminar Producto',
+        `¿Estás seguro de eliminar permanentemente "${prod.name}" del catálogo?`,
+        async () => {
+          try {
+            await apiFetch(`/api/admin/products/${id}`, { method: 'DELETE' });
+            await loadAdminState();
+            showToast('Producto eliminado');
+          } catch (err) {
+            showToast(err.message, 'error');
+          }
+        }
+      );
+    }
+
+    // D. CATEGORÍAS
+    function renderCategoriesList() {
+      const grid = document.getElementById('categoriesGrid');
+      grid.innerHTML = STATE.categories
+        .map((c) => {
+          const count = STATE.products.filter((p) => p.categoryId === c.id).length;
+          return `
+            <div class="item-card ${c.active ? '' : 'inactive'}">
+              <div class="item-body">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <h4>${escapeHtml(c.name)}</h4>
+                  <span class="badge ${c.active ? 'green' : 'gray'}">${c.active ? 'Activa' : 'Inactiva'}</span>
+                </div>
+                <p>${escapeHtml(c.description || 'Sin descripción')}</p>
+                <div class="item-price">Orden #${c.order} · ${count} producto(s)</div>
+                <div class="item-actions">
+                  <button type="button" class="btn btn-primary btn-sm" onclick="openCategoryModal('${c.id}')">✏️ Editar</button>
+                  <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteCategory('${c.id}')">🗑️ Eliminar</button>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function openCategoryModal(catId = null) {
+      const cat = catId ? STATE.categories.find((c) => c.id === catId) : null;
+      document.getElementById('categoryModalTitle').textContent = cat ? `Editar Categoría: ${cat.name}` : 'Nueva Categoría';
+      document.getElementById('cat_id').value = cat ? cat.id : '';
+      document.getElementById('cat_name').value = cat ? cat.name : '';
+      document.getElementById('cat_description').value = cat ? cat.description : '';
+      document.getElementById('cat_order').value = cat ? cat.order : STATE.categories.length + 1;
+      document.getElementById('cat_active').checked = cat ? Boolean(cat.active) : true;
+      document.getElementById('categoryModal').classList.add('open');
+    }
+
+    function closeCategoryModal() {
+      document.getElementById('categoryModal').classList.remove('open');
+    }
+
+    document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('cat_id').value;
+      const payload = {
+        name: document.getElementById('cat_name').value.trim(),
+        description: document.getElementById('cat_description').value.trim(),
+        order: Number(document.getElementById('cat_order').value) || 1,
+        active: document.getElementById('cat_active').checked,
+      };
+      try {
+        if (id) {
+          await apiFetch(`/api/admin/categories/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(payload),
+          });
+        } else {
+          await apiFetch('/api/admin/categories', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+          });
+        }
+        closeCategoryModal();
+        await loadAdminState();
+        showToast('Categoría guardada correctamente');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+
+    function confirmDeleteCategory(id) {
+      const cat = STATE.categories.find((c) => c.id === id);
+      if (!cat) return;
+      openConfirmModal(
+        'Eliminar Categoría',
+        `¿Deseas eliminar la categoría "${cat.name}"? Los productos asociados pasarán a la categoría principal.`,
+        async () => {
+          try {
+            await apiFetch(`/api/admin/categories/${id}`, { method: 'DELETE' });
+            await loadAdminState();
+            showToast('Categoría eliminada');
+          } catch (err) {
+            showToast(err.message, 'error');
+          }
+        }
+      );
+    }
+
+    // B & 7. IMÁGENES Y MEDIA MANAGER
+    document.getElementById('newImgFile').addEventListener('change', function () {
+      const file = this.files && this.files[0];
+      if (!file) {
+        clearNewImagePreview();
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.getElementById('newImgPreviewEl').src = ev.target.result;
+        document.getElementById('newImgPreviewContainer').style.display = 'flex';
+        document.getElementById('newImgMetaInfo').textContent = `${file.name} (${Math.round(file.size / 1024)} KB · ${file.type})`;
+        if (!document.getElementById('newImgName').value) {
+          document.getElementById('newImgName').value = file.name.replace(/\.[^/.]+$/, '');
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function clearNewImagePreview() {
+      document.getElementById('newImgPreviewContainer').style.display = 'none';
+      document.getElementById('newImgPreviewEl').src = '';
+    }
+
+    document.getElementById('uploadImageForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById('newImgFile');
+      if (!fileInput.files || !fileInput.files[0]) {
+        showToast('Selecciona una imagen primero', 'error');
+        return;
+      }
+      const btn = document.getElementById('uploadImgSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Subiendo imagen...';
+      try {
+        const fd = new FormData();
+        fd.append('file', fileInput.files[0]);
+        fd.append('name', document.getElementById('newImgName').value.trim());
+        fd.append('category', document.getElementById('newImgCategory').value);
+        const repId = document.getElementById('newImgReplaceId').value;
+        if (repId) fd.append('replaceId', repId);
+
+        await apiFetch('/api/admin/images', {
+          method: 'POST',
+          body: fd,
+        });
+        document.getElementById('uploadImageForm').reset();
+        clearNewImagePreview();
+        await loadAdminState();
+        showToast('Imagen subida y almacenada de forma persistente');
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '📤 Subir y Guardar Imagen';
+      }
+    });
+
+    async function uploadAndAssign(fileInput, targetInputId, targetPreviewId, category = 'other', replaceId = '') {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      showToast('Subiendo fotografía...');
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('name', file.name.replace(/\.[^/.]+$/, ''));
+        fd.append('category', category);
+        if (replaceId) fd.append('replaceId', replaceId);
+
+        const res = await apiFetch('/api/admin/images', {
+          method: 'POST',
+          body: fd,
+        });
+        document.getElementById(targetInputId).value = res.publicUrl;
+        document.getElementById(targetPreviewId).src = res.publicUrl;
+        await loadAdminState();
+        document.getElementById(targetInputId).value = res.publicUrl;
+        document.getElementById(targetPreviewId).src = res.publicUrl;
+        showToast('Fotografía cargada. Recuerda pulsar Guardar cambios.');
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        fileInput.value = '';
+      }
+    }
+
+    function renderImagesLibrary() {
+      const replaceSelect = document.getElementById('newImgReplaceId');
+      replaceSelect.innerHTML = `<option value="">— Guardar como imagen nueva —</option>` +
+        STATE.images.map((img) => `<option value="${img.id}">Reemplazar: ${escapeHtml(img.name)} (${img.key})</option>`).join('');
+
+      const grid = document.getElementById('imagesLibraryGrid');
+      grid.innerHTML = STATE.images
+        .map((img) => {
+          const kb = Math.max(1, Math.round((img.sizeBytes || 0) / 1024));
+          return `
+            <div class="item-card">
+              <div class="item-thumb">
+                <img src="${img.url}" alt="${escapeHtml(img.name)}" loading="lazy">
+                <div class="item-badges">
+                  <span class="badge">${escapeHtml(img.category)}</span>
+                  <span class="badge gray">${kb} KB</span>
+                </div>
+              </div>
+              <div class="item-body">
+                <h4>${escapeHtml(img.name)}</h4>
+                <p style="word-break:break-all;font-family:monospace;font-size:0.74rem">/api/media/${img.id}</p>
+                <div class="item-actions">
+                  <label class="btn btn-gold btn-sm" style="cursor:pointer">
+                    🔄 Reemplazar foto
+                    <input type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="replaceExistingImage(this, '${img.id}', '${escapeHtml(img.name)}', '${img.category}')">
+                  </label>
+                  <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteImage('${img.id}', '${escapeHtml(img.name)}')">🗑️</button>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    async function replaceExistingImage(fileInput, imageId, imageName, category) {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('name', imageName);
+        fd.append('category', category);
+        fd.append('replaceId', imageId);
+        await apiFetch('/api/admin/images', {
+          method: 'POST',
+          body: fd,
+        });
+        await loadAdminState();
+        showToast('Imagen reemplazada y actualizada en toda la web');
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        fileInput.value = '';
+      }
+    }
+
+    function confirmDeleteImage(id, name) {
+      openConfirmModal(
+        'Eliminar Imagen',
+        `¿Seguro que deseas eliminar la imagen "${name}"?`,
+        async () => {
+          try {
+            await apiFetch(`/api/admin/images/${id}`, { method: 'DELETE' });
+            await loadAdminState();
+            showToast('Imagen eliminada');
+          } catch (err) {
+            showToast(err.message, 'error');
+          }
+        }
+      );
+    }
+
+    function openMediaPicker(inputId, previewId) {
+      pickerTargetInputId = inputId;
+      pickerTargetPreviewId = previewId;
+      const grid = document.getElementById('mediaPickerGrid');
+      grid.innerHTML = STATE.images
+        .map(
+          (img) => `
+          <div class="item-card" style="cursor:pointer" onclick="selectImageFromPicker('${img.url}')">
+            <div class="item-thumb">
+              <img src="${img.url}" alt="${escapeHtml(img.name)}">
+            </div>
+            <div class="item-body">
+              <h4>${escapeHtml(img.name)}</h4>
+              <button type="button" class="btn btn-primary btn-sm">Seleccionar</button>
+            </div>
+          </div>
+        `
+        )
+        .join('');
+      document.getElementById('mediaPickerModal').classList.add('open');
+    }
+
+    function selectImageFromPicker(url) {
+      if (pickerTargetInputId) document.getElementById(pickerTargetInputId).value = url;
+      if (pickerTargetPreviewId) document.getElementById(pickerTargetPreviewId).src = url;
+      closeMediaPicker();
+    }
+
+    function closeMediaPicker() {
+      document.getElementById('mediaPickerModal').classList.remove('open');
+    }
+
+    // E. SECCIONES DE LA PÁGINA
+    function renderSectionsEditor() {
+      document.getElementById('marqueeInput').value = (STATE.marqueeItems || []).join(', ');
+      const container = document.getElementById('sectionsListContainer');
+
+      container.innerHTML = STATE.sections
+        .map(
+          (sec, idx) => `
+          <div class="list-row" data-sec-idx="${idx}">
+            <div class="list-row-head">
+              <div>
+                <strong style="color:var(--navy);font-size:1rem">${idx + 1}. ${escapeHtml(sec.name)}</strong>
+                <span class="badge ${sec.active ? 'green' : 'gray'}" style="margin-left:8px">${sec.active ? 'Visible' : 'Oculta'}</span>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <label class="checkbox-row" style="padding:0">
+                  <input type="checkbox" class="sec-active" ${sec.active ? 'checked' : ''}>
+                  <span>Mostrar sección</span>
+                </label>
+                <input type="number" class="input sec-order" style="width:74px;padding:5px 8px" value="${sec.order}" min="1" title="Orden">
+              </div>
+            </div>
+            <div class="form-grid cols-2">
+              <div class="field">
+                <label>Título de la sección</label>
+                <input type="text" class="input sec-title" value="${escapeHtml(sec.title || '')}">
+              </div>
+              <div class="field">
+                <label>Subtítulo / Descripción corta</label>
+                <input type="text" class="input sec-subtitle" value="${escapeHtml(sec.subtitle || '')}">
+              </div>
+              ${
+                sec.key === 'flyer'
+                  ? `
+                <div class="field full">
+                  <label>Etiquetas (Chips separados por coma)</label>
+                  <input type="text" class="input sec-chips" value="${escapeHtml((sec.chips || []).join(', '))}">
+                </div>
+                <div class="field full">
+                  <label>Imagen del Flyer / Tipos de Mug</label>
+                  <div class="img-Selector-box">
+                    <div class="img-preview-frame">
+                      <img id="prev_sec_${sec.id}" src="${sec.image || '/api/media/img_flyer'}" alt="Flyer">
+                    </div>
+                    <div style="flex:1">
+                      <input type="text" id="inp_sec_${sec.id}" class="input sec-image" value="${escapeHtml(sec.image || '/api/media/img_flyer')}" style="margin-bottom:6px">
+                      <label class="btn btn-gold btn-sm">
+                        📤 Subir nuevo Flyer
+                        <input type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadAndAssign(this, 'inp_sec_${sec.id}', 'prev_sec_${sec.id}', 'banner', 'img_flyer')">
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              `
+                  : ''
+              }
+            </div>
+          </div>
+        `
+        )
+        .join('');
+    }
+
+    async function saveSectionsChanges() {
+      try {
+        const marqueeItems = document
+          .getElementById('marqueeInput')
+          .value.split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+        const rows = document.querySelectorAll('#sectionsListContainer .list-row');
+        const updatedSections = [...STATE.sections];
+
+        rows.forEach((row) => {
+          const idx = Number(row.dataset.secIdx);
+          const sec = { ...updatedSections[idx] };
+          sec.active = row.querySelector('.sec-active').checked;
+          sec.order = Number(row.querySelector('.sec-order').value) || idx + 1;
+          sec.title = row.querySelector('.sec-title').value.trim();
+          sec.subtitle = row.querySelector('.sec-subtitle').value.trim();
+
+          const chipsInput = row.querySelector('.sec-chips');
+          if (chipsInput) {
+            sec.chips = chipsInput.value
+              .split(',')
+              .map((c) => c.trim())
+              .filter(Boolean);
+          }
+          const imgInput = row.querySelector('.sec-image');
+          if (imgInput) {
+            sec.image = imgInput.value.trim();
+          }
+          updatedSections[idx] = sec;
+        });
+
+        await apiFetch('/api/admin/sections', {
+          method: 'PUT',
+          body: JSON.stringify({ sections: updatedSections, marqueeItems }),
+        });
+        await loadAdminState();
+        showToast('Secciones de la página actualizadas');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // G. CONFIGURACIÓN VISUAL
+    function syncColor(targetId, val) {
+      const el = document.getElementById(targetId);
+      if (el) el.value = val;
+    }
+
+    function renderVisualForm() {
+      const v = STATE.visual;
+      const setColor = (key, val) => {
+        document.getElementById(`vis_${key}`).value = val;
+        document.getElementById(`vis_${key}_pick`).value = val;
+      };
+      setColor('navyColor', v.navyColor || '#0a1a4a');
+      setColor('goldColor', v.goldColor || '#f2c75c');
+      setColor('tealColor', v.tealColor || '#5fa8c4');
+      setColor('waColor', v.waColor || '#1faa59');
+      setColor('bgLight', v.bgLight || '#fff9ec');
+      setColor('fgLight', v.fgLight || '#0c1f55');
+      setColor('bgDark', v.bgDark || '#070f2b');
+      setColor('cardLight', v.cardLight || '#ffffff');
+
+      document.getElementById('vis_themeMode').value = v.themeMode || 'auto';
+      document.getElementById('vis_headingFont').value = v.headingFont;
+      document.getElementById('vis_bodyFont').value = v.bodyFont;
+
+      document.getElementById('vis_titleSizeScale').value = v.titleSizeScale || 1;
+      document.getElementById('lbl_titleScale').textContent = Math.round((v.titleSizeScale || 1) * 100) + '%';
+
+      document.getElementById('vis_sectionSpacing').value = v.sectionSpacing || 56;
+      document.getElementById('lbl_secSpacing').textContent = (v.sectionSpacing || 56) + 'px';
+
+      document.getElementById('vis_cardBorderRadius').value = v.cardBorderRadius || 18;
+      document.getElementById('lbl_cardRadius').textContent = (v.cardBorderRadius || 18) + 'px';
+
+      document.getElementById('vis_buttonBorderRadius').value = v.buttonBorderRadius || 14;
+      document.getElementById('lbl_btnRadius').textContent = (v.buttonBorderRadius || 14) + 'px';
+
+      document.getElementById('vis_enableSparkles').checked = Boolean(v.enableSparkles);
+      document.getElementById('vis_enableLightning').checked = Boolean(v.enableLightning);
+      document.getElementById('vis_enable3DCarouselRotation').checked = Boolean(v.enable3DCarouselRotation);
+      document.getElementById('vis_enableCardTilt').checked = Boolean(v.enableCardTilt);
+      document.getElementById('vis_enableScrollAnimations').checked = Boolean(v.enableScrollAnimations);
+    }
+
+    document.getElementById('visualForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const payload = {
+          navyColor: document.getElementById('vis_navyColor').value.trim(),
+          goldColor: document.getElementById('vis_goldColor').value.trim(),
+          tealColor: document.getElementById('vis_tealColor').value.trim(),
+          waColor: document.getElementById('vis_waColor').value.trim(),
+          bgLight: document.getElementById('vis_bgLight').value.trim(),
+          fgLight: document.getElementById('vis_fgLight').value.trim(),
+          bgDark: document.getElementById('vis_bgDark').value.trim(),
+          cardLight: document.getElementById('vis_cardLight').value.trim(),
+          themeMode: document.getElementById('vis_themeMode').value,
+          headingFont: document.getElementById('vis_headingFont').value,
+          bodyFont: document.getElementById('vis_bodyFont').value,
+          titleSizeScale: Number(document.getElementById('vis_titleSizeScale').value),
+          sectionSpacing: Number(document.getElementById('vis_sectionSpacing').value),
+          cardBorderRadius: Number(document.getElementById('vis_cardBorderRadius').value),
+          buttonBorderRadius: Number(document.getElementById('vis_buttonBorderRadius').value),
+          enableSparkles: document.getElementById('vis_enableSparkles').checked,
+          enableLightning: document.getElementById('vis_enableLightning').checked,
+          enable3DCarouselRotation: document.getElementById('vis_enable3DCarouselRotation').checked,
+          enableCardTilt: document.getElementById('vis_enableCardTilt').checked,
+          enableScrollAnimations: document.getElementById('vis_enableScrollAnimations').checked,
+        };
+        await apiFetch('/api/admin/visual', {
+          method: 'PUT',
+          body: JSON.stringify(payload),
+        });
+        await loadAdminState();
+        showToast('Configuración visual guardada y aplicada');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+
+    // F. BOTONES Y ENLACES
+    function renderButtonsEditor() {
+      const container = document.getElementById('buttonsListContainer');
+      container.innerHTML = STATE.buttons
+        .map(
+          (b, idx) => `
+          <div class="list-row" data-btn-idx="${idx}">
+            <div class="list-row-head">
+              <strong>${escapeHtml(b.label)}</strong>
+              <label class="checkbox-row" style="padding:0">
+                <input type="checkbox" class="btn-vis" ${b.visible ? 'checked' : ''}>
+                <span>Botón Visible</span>
+              </label>
+            </div>
+            <div class="form-grid cols-3">
+              <div class="field">
+                <label>Texto del Botón</label>
+                <input type="text" class="input btn-text" value="${escapeHtml(b.text || '')}">
+              </div>
+              <div class="field">
+                <label>Estilo de Color</label>
+                <select class="select btn-color">
+                  <option value="gold" ${b.colorVariant === 'gold' ? 'selected' : ''}>Dorado (Gold)</option>
+                  <option value="whatsapp" ${b.colorVariant === 'whatsapp' ? 'selected' : ''}>Verde WhatsApp</option>
+                  <option value="outline" ${b.colorVariant === 'outline' ? 'selected' : ''}>Borde Dorado Transparente</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Tipo de Acción</label>
+                <select class="select btn-action">
+                  <option value="whatsapp" ${b.actionType === 'whatsapp' ? 'selected' : ''}>Abrir Mensaje de WhatsApp</option>
+                  <option value="url" ${b.actionType === 'url' ? 'selected' : ''}>Abrir Enlace Web (URL)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Número WhatsApp (Ej: 573187888765)</label>
+                <input type="text" class="input btn-wa" value="${escapeHtml(b.whatsappNumber || STATE.identity.whatsappNumber || '')}">
+              </div>
+              <div class="field">
+                <label>Enlace Destino (Si es URL externa)</label>
+                <input type="text" class="input btn-url" value="${escapeHtml(b.destinationUrl || '')}">
+              </div>
+              <div class="field">
+                <label>Mensaje Predeterminado de WhatsApp</label>
+                <input type="text" class="input btn-msg" value="${escapeHtml(b.defaultMessage || '')}">
+              </div>
+            </div>
+          </div>
+        `
+        )
+        .join('');
+    }
+
+    async function saveButtonsChanges() {
+      try {
+        const rows = document.querySelectorAll('#buttonsListContainer .list-row');
+        const updated = [...STATE.buttons];
+        rows.forEach((row) => {
+          const idx = Number(row.dataset.btnIdx);
+          updated[idx] = {
+            ...updated[idx],
+            visible: row.querySelector('.btn-vis').checked,
+            text: row.querySelector('.btn-text').value.trim(),
+            colorVariant: row.querySelector('.btn-color').value,
+            actionType: row.querySelector('.btn-action').value,
+            whatsappNumber: row.querySelector('.btn-wa').value.trim(),
+            destinationUrl: row.querySelector('.btn-url').value.trim(),
+            defaultMessage: row.querySelector('.btn-msg').value.trim(),
+          };
+        });
+        await apiFetch('/api/admin/buttons', {
+          method: 'PUT',
+          body: JSON.stringify({ buttons: updated }),
+        });
+        await loadAdminState();
+        showToast('Botones y enlaces actualizados');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // CREDENCIALES
+    document.getElementById('credentialsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const payload = {
+          newUsername: document.getElementById('cred_username').value.trim(),
+          newEmail: document.getElementById('cred_email').value.trim(),
+          currentPassword: document.getElementById('cred_currentPassword').value,
+          newPassword: document.getElementById('cred_newPassword').value,
+        };
+        const res = await apiFetch('/api/admin/credentials', {
+          method: 'PUT',
+          body: JSON.stringify(payload),
+        });
+        document.getElementById('cred_currentPassword').value = '';
+        document.getElementById('cred_newPassword').value = '';
+        document.getElementById('sideAdminUser').textContent = `Admin: ${res.admin.username}`;
+        showToast('Credenciales actualizadas con éxito');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+
+    async function restoreBackupFile(fileInput) {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const json = JSON.parse(text);
+        await apiFetch('/api/admin/restore', {
+          method: 'POST',
+          body: JSON.stringify(json),
+        });
+        await loadAdminState();
+        showToast('Copia de seguridad restaurada exitosamente');
+      } catch (err) {
+        showToast(err.message || 'Archivo de respaldo inválido', 'error');
+      } finally {
+        fileInput.value = '';
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    checkAuthStatus();
+  </script>
 </body>
 </html>

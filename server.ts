@@ -883,8 +883,12 @@ app.post('/api/admin/restore', requireAdminAuth, (req, res) => {
 // ==========================================
 // 5. ROUTES FOR /admin AND PUBLIC WEBSITE
 // ==========================================
-app.get(['/admin', '/admin/*'], noCache, (_req, res) => {
+app.get(['/admin', '/admin/', '/admin.html', '/admin/index.html', '/admin/*'], noCache, (_req, res) => {
+  const adminDirPath = path.join(__dirname, 'admin', 'index.html');
   const adminHtmlPath = path.join(__dirname, 'admin.html');
+  if (fs.existsSync(adminDirPath)) {
+    return res.sendFile(adminDirPath);
+  }
   if (fs.existsSync(adminHtmlPath)) {
     return res.sendFile(adminHtmlPath);
   }

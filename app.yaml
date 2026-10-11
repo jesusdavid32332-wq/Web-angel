@@ -1,0 +1,12 @@
+---
+kind: wasmer.io/App.v0
+name: web-angel
+package: wasmer/static-web-server
+cli_args:
+  - "--root"
+  - "."
+  - "--index-files"
+  - "index.html"
+  - "--redirect-trailing-slash"
+  - "--config-file"
+  - "config.toml"

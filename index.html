@@ -242,7 +242,40 @@ let SELECTED_CAT = "all";
 async function bootSite() {
   try {
     const res = await fetch("/api/public/site-data", { cache: "no-store" });
+    if (!res.ok) throw new Error("API responded with " + res.status);
     SITE_DATA = await res.json();
+  } catch (err) {
+    console.warn("Servidor dinámico /api no disponible, cargando datos desde almacenamiento de respaldo:", err);
+    try {
+      const fallbackRes = await fetch("/data/database.json");
+      if (fallbackRes.ok) {
+        const db = await fallbackRes.json();
+        const activeCategories = (db.categories || []).filter((c) => c.active).sort((a, b) => a.order - b.order);
+        const activeProducts = (db.products || []).filter((p) => p.active).sort((a, b) => a.order - b.order);
+        const orderedSections = (db.sections || []).sort((a, b) => a.order - b.order);
+        const imageMap = {};
+        (db.images || []).forEach((img) => {
+          imageMap[img.id] = img.url || "";
+          if (img.key) imageMap[img.key] = img.url || "";
+        });
+        SITE_DATA = {
+          updatedAt: db.updatedAt,
+          identity: db.identity,
+          visual: db.visual,
+          categories: activeCategories,
+          products: activeProducts,
+          sections: orderedSections,
+          buttons: db.buttons,
+          marqueeItems: db.marqueeItems,
+          imageMap,
+        };
+      }
+    } catch (fallbackErr) {
+      console.error("Error al cargar datos de respaldo:", fallbackErr);
+    }
+  }
+
+  if (SITE_DATA) {
     applyVisualConfig(SITE_DATA.visual);
     applyIdentity(SITE_DATA.identity);
     applyMarquee(SITE_DATA.marqueeItems);
@@ -252,10 +285,27 @@ async function bootSite() {
     renderCatalogCards(SITE_DATA.products, SITE_DATA.identity);
     init3DCarousel(SITE_DATA.products, SITE_DATA.visual);
     initAnimationsAndEffects(SITE_DATA.visual);
-  } catch (err) {
-    console.error("Error cargando datos del sitio:", err);
   }
 }
+
+// Respaldo automático de imágenes base64 si el endpoint /api/media no está activo
+window.addEventListener("error", async (e) => {
+  if (e.target && e.target.tagName === "IMG" && e.target.src && e.target.src.includes("/api/media/")) {
+    const m = e.target.src.match(/\/api\/media\/(?:img_)?([a-zA-Z0-9_]+)/);
+    if (m && m[1]) {
+      const k = m[1];
+      if (!window.__FALLBACK_IMGS__) {
+        try {
+          const r = await fetch("/data/initial-images.json");
+          window.__FALLBACK_IMGS__ = await r.json();
+        } catch {}
+      }
+      if (window.__FALLBACK_IMGS__ && window.__FALLBACK_IMGS__[k]) {
+        e.target.src = window.__FALLBACK_IMGS__[k];
+      }
+    }
+  }
+}, true);
 
 function applyVisualConfig(v) {
   if (!v) return;

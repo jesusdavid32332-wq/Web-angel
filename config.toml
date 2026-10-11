@@ -1,0 +1,21 @@
+[general]
+root = "."
+index-files = ["index.html"]
+directory-listing = false
+redirect-trailing-slash = true
+
+[[advanced.rewrites]]
+source = "/admin"
+destination = "/admin/index.html"
+
+[[advanced.rewrites]]
+source = "/admin/"
+destination = "/admin/index.html"
+
+[[advanced.rewrites]]
+source = "/admin/*"
+destination = "/admin/index.html"
+
+[[advanced.rewrites]]
+source = "/admin.html"
+destination = "/admin/index.html"
