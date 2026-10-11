@@ -2115,7 +2115,8 @@
       document.getElementById('statActiveCategories').textContent = `${s.activeCategories} activas`;
       document.getElementById('statTotalImages').textContent = s.totalImages;
 
-      const dt = new Date(s.updatedAt);
+      const rawDate = s.updatedAt ? new Date(s.updatedAt) : new Date();
+      const dt = !isNaN(rawDate.getTime()) ? rawDate : new Date();
       document.getElementById('statUpdatedTime').textContent = dt.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       document.getElementById('statUpdatedDate').textContent = dt.toLocaleDateString('es-CO', { dateStyle: 'medium' });
       document.getElementById('lastUpdatedLabel').textContent = `Último cambio guardado: ${dt.toLocaleString('es-CO')}`;

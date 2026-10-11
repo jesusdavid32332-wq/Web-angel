@@ -38,8 +38,20 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Prefix all logs with ISO 8601 timestamps for log viewers (prevents Invalid Date in viewer)
+const origLog = console.log;
+const origError = console.error;
+console.log = (...args: any[]) => {
+  origLog(`[${new Date().toISOString()}]`, ...args);
+};
+console.error = (...args: any[]) => {
+  origError(`[${new Date().toISOString()}]`, ...args);
+};
+
 const app = express();
-const PORT = 3000;
+const PORT = process.env.APPLET_ID
+  ? Number(process.env.DEFAULT_APP_PORT) || 3000
+  : Number(process.env.PORT) || 8080;
 
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true, limit: '15mb' }));
